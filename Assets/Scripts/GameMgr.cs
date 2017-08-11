@@ -10,6 +10,9 @@ public enum EnGameState {
 }
 
 public class GameMgr : MonoBehaviour {
+    public static GameMgr It;
+    void Awake() { It = this; }
+
     [HideInInspector]
     public EnGameState State;
 

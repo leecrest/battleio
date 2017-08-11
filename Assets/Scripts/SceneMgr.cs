@@ -5,23 +5,27 @@ using UnityEngine;
 public class SceneMgr : MonoBehaviour {
     public GameObject m_HeroPrefab;
     public Transform m_ObjRoot;
+    public ETCJoystick m_Joystick;
 
     private Stack<Hero> m_HeroPool;
     private Hero m_MainHero;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         m_HeroPool = new Stack<Hero>();
-	}
+        
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
+
+    }
 
     public void OnGameReady()
     {
         CameraReset();
+        m_Joystick.activated = false;
     }
 
     public void OnGameStart()
@@ -32,10 +36,12 @@ public class SceneMgr : MonoBehaviour {
         {
             CreateHero(false, Random.Range(-10f,10f), Random.Range(-10f,10f));
         }
+        m_Joystick.activated = true;
     }
 
     public void OnGameOver()
     {
+        m_Joystick.activated = false;
         CameraReset();
     }
 
@@ -46,6 +52,7 @@ public class SceneMgr : MonoBehaviour {
         if (isMain)
         {
             m_MainHero = hero;
+            //m_Joystick.axisX.directTransform = hero.transform;
             UpdateCamera();
         }
     }
@@ -72,6 +79,7 @@ public class SceneMgr : MonoBehaviour {
         hero.transform.position = new Vector3(x, 0, z);
         hero.transform.localScale = new Vector3(5, 5, 5);
         hero.gameObject.SetActive(true);
+        hero.Init();
         return hero;
     }
 
@@ -115,6 +123,38 @@ public class SceneMgr : MonoBehaviour {
         dst.y = 3;
         dst.z -= 3;
         Camera.main.transform.position = dst;
+    }
+
+    #endregion
+
+    #region 输入控制
+    
+    public void OnJoystickMoveStart()
+    {
+        // 主角进入移动状态
+        if (m_MainHero) m_MainHero.StartMove();
+    }
+
+    public void OnJoystickMove(Vector2 vec)
+    {
+        if (m_MainHero)
+        {
+            m_MainHero.MoveBy(vec.x, vec.y);
+            UpdateCamera();
+        }
+        else
+        {
+            Transform tf = Camera.main.transform;
+            Vector3 pos = tf.position;
+            pos.x -= vec.x * 0.05f;
+            pos.z -= vec.y * 0.05f;
+            tf.position = pos;
+        }
+    }
+
+    public void OnJoystickMoveEnd()
+    {
+        if (m_MainHero) m_MainHero.StopMove();
     }
 
     #endregion
