@@ -2,34 +2,48 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SceneMgr : MonoBehaviour {
-    public GameObject m_HeroPrefab;
+public class CombatMgr : MonoBehaviour {
+    public static CombatMgr It;
+    void Awake() { It = this; }
+
+    public Transform m_SceneRoot;
     public Transform m_ObjRoot;
     public ETCJoystick m_Joystick;
 
-    private Stack<Hero> m_HeroPool;
-    private Hero m_MainHero;
+    private FighterHero m_MainHero;
 
-    // Use this for initialization
+    private int m_SceneID;
+    private int m_LastSceneID;
+    private GameObject m_SceneObj;
+
     void Start () {
-        m_HeroPool = new Stack<Hero>();
-        
-
+        m_SceneID = -1;
+        m_LastSceneID = -1;
+        m_SceneObj = null;
     }
 	
-	// Update is called once per frame
-	void Update () {
-
-    }
-
-    public void OnGameReady()
+    public void CombatReady()
     {
         CameraReset();
         m_Joystick.activated = false;
     }
 
-    public void OnGameStart()
+    public void CombatStart()
     {
+        m_SceneID = 1;
+        // 检查是否要销毁原场景
+        if (m_SceneObj != null && m_LastSceneID != m_SceneID)
+        {
+            DestroyObject(m_SceneObj);
+            m_SceneObj = null;
+        }
+        // 检查是否需要加载场景
+        if (m_SceneObj == null)
+        {
+            m_SceneObj = Global.It.LoadScene(m_SceneID, m_SceneRoot);
+        }
+        m_LastSceneID = m_SceneID;
+
         // 创建主角，并将镜头绑定到主角头上
         CreateHero(true, 0, 0);
         for (int i = 0; i < 20; i++)
@@ -37,9 +51,10 @@ public class SceneMgr : MonoBehaviour {
             CreateHero(false, Random.Range(-10f,10f), Random.Range(-10f,10f));
         }
         m_Joystick.activated = true;
+        m_Joystick.enabled = true;
     }
 
-    public void OnGameOver()
+    public void CombatOver()
     {
         m_Joystick.activated = false;
         CameraReset();
@@ -47,7 +62,7 @@ public class SceneMgr : MonoBehaviour {
 
     void CreateHero(bool isMain, float x, float z)
     {
-        Hero hero = NewHero(x, z);
+        FighterHero hero = Global.It.NewFighterHero(0, x, z, m_ObjRoot);
         hero.IsMain = isMain;
         if (isMain)
         {
@@ -58,52 +73,7 @@ public class SceneMgr : MonoBehaviour {
     }
 
     #region 主角对象池
-    Hero NewHero(float x, float z)
-    {
-        Hero hero;
-        if (m_HeroPool.Count > 0)
-        {
-            hero = m_HeroPool.Pop();
-        }
-        else
-        {
-            GameObject obj = Instantiate<GameObject>(m_HeroPrefab);
-            hero = obj.GetComponent<Hero>();
-            if (hero == null)
-            {
-                hero = obj.AddComponent<Hero>();
-            }
-        }
-        hero.transform.parent = m_ObjRoot;
-        hero.transform.rotation = Quaternion.identity;
-        hero.transform.position = new Vector3(x, 0, z);
-        hero.transform.localScale = new Vector3(5, 5, 5);
-        hero.gameObject.SetActive(true);
-        hero.Init();
-        return hero;
-    }
-
-    void ReleaseHero(Hero hero)
-    {
-        hero.gameObject.SetActive(false);
-        m_HeroPool.Push(hero);
-        if (hero == m_MainHero)
-        {
-            m_MainHero = null;
-        }
-    }
-
-    void DistroyAllHero()
-    {
-        if (m_HeroPool.Count <= 0) return;
-        Hero hero;
-        while (m_HeroPool.Count > 0)
-        {
-            hero = m_HeroPool.Pop();
-            if (hero == null) break;
-            DestroyObject(hero.gameObject);
-        }
-    }
+    
 
     #endregion
 

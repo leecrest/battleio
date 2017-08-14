@@ -225,8 +225,7 @@ public class ETCJoystick : ETCBase,IPointerEnterHandler,IDragHandler, IBeginDrag
 			Vector2 screenPosition = Vector2.zero;
 			
 			if (isTouchOverJoystickArea(ref localPosition, ref screenPosition)){
-				
-				GameObject overGO = GetFirstUIElement( screenPosition);
+                GameObject overGO = GetFirstUIElement( screenPosition);
 				
 				if (overGO == null || (allowJoystickOverTouchPad && overGO.GetComponent<ETCTouchPad>()) || (overGO != null && overGO.GetComponent<ETCArea>() ) ) {
 
@@ -402,7 +401,7 @@ public class ETCJoystick : ETCBase,IPointerEnterHandler,IDragHandler, IBeginDrag
 		}
 		
 		if (joystickType == JoystickType.Dynamic){
-			//visible = false;
+			visible = false;
 			isDynamicActif = false;
 		}
 

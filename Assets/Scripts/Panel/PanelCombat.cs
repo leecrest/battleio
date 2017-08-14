@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraMgr : MonoBehaviour {
+public class PanelCombat : PanelBase
+{
 
 	// Use this for initialization
 	void Start () {
@@ -14,5 +15,9 @@ public class CameraMgr : MonoBehaviour {
 		
 	}
 
-    
+    public override void Show()
+    {
+        base.Show();
+        CombatMgr.It.CombatStart();
+    }
 }

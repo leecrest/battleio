@@ -154,16 +154,16 @@
     <Compile Include="Assets\EasyTouchBundle\EasyTouchControls\Plugins\ETCInput.cs" />
     <Compile Include="Assets\EasyTouchBundle\EasyTouchControls\Plugins\ETCJoystick.cs" />
     <Compile Include="Assets\EasyTouchBundle\EasyTouchControls\Plugins\ETCTouchPad.cs" />
-    <Compile Include="Assets\Scripts\CameraMgr.cs" />
-    <Compile Include="Assets\Scripts\GameMgr.cs" />
+    <Compile Include="Assets\Scripts\Combat\FighterBullet.cs" />
+    <Compile Include="Assets\Scripts\Combat\FighterHero.cs" />
+    <Compile Include="Assets\Scripts\Combat\FighterItem.cs" />
+    <Compile Include="Assets\Scripts\CombatMgr.cs" />
+    <Compile Include="Assets\Scripts\Global.cs" />
     <Compile Include="Assets\Scripts\Hero.cs" />
-    <Compile Include="Assets\Scripts\Managers\TankManager.cs" />
-    <Compile Include="Assets\Scripts\SceneMgr.cs" />
-    <Compile Include="Assets\Scripts\Shell\ShellExplosion.cs" />
-    <Compile Include="Assets\Scripts\Tank\TankHealth.cs" />
-    <Compile Include="Assets\Scripts\Tank\TankMovement.cs" />
-    <Compile Include="Assets\Scripts\Tank\TankShooting.cs" />
-    <Compile Include="Assets\Scripts\UI\UIDirectionControl.cs" />
+    <Compile Include="Assets\Scripts\Panel\PanelBase.cs" />
+    <Compile Include="Assets\Scripts\Panel\PanelCombat.cs" />
+    <Compile Include="Assets\Scripts\Panel\PanelHome.cs" />
+    <Compile Include="Assets\Scripts\Setting.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\EasyTouchBundle\EasyTouch\How to migrate from EasyTouch 4.X.txt" />
