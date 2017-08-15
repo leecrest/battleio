@@ -17,6 +17,7 @@ public class FighterHero : FighterBase
 
     public int CurHP = 50;
     public int MaxHP = 100;
+    public float Speed = 0.05f;
 
     // Use this for initialization
     void Start()
@@ -96,22 +97,21 @@ public class FighterHero : FighterBase
         float angle = Vector2.SignedAngle(Vector2.down, new Vector2(x, z));
         transform.rotation = Quaternion.AngleAxis(angle, Vector2.down);
         Vector3 pos = transform.position;
-        if (IsMain) Debug.Log(x + "," + z);
         if (Mathf.Approximately(x, 0f))
         {
             if (Mathf.Approximately(z, 0f)) return;
-            pos.z -= x > 0f ? 0.05f : -0.05f;
+            pos.z -= z > 0f ? Speed : -Speed;
         }
         else if (Mathf.Approximately(z, 0f))
         {
             if (Mathf.Approximately(x, 0f)) return;
-            pos.x += z > 0f ? 0.05f : -0.05f;
+            pos.x -= x > 0f ? Speed : -Speed;
         }
         else
         {
-            float delta = Mathf.Tan(x / z);
-            pos.x += 0.05f * Mathf.Cos(delta);
-            pos.z += 0.05f * Mathf.Sin(delta);
+            float delta = Mathf.Atan2(x, z);
+            pos.x -= Speed * Mathf.Sin(delta);
+            pos.z -= Speed * Mathf.Cos(delta);
         }
         transform.position = pos;
     }
@@ -141,19 +141,19 @@ public class FighterHero : FighterBase
     {
         if (m_Moving)
         {
-            if (Random.Range(1, 100) < 50)
+            //if (Random.Range(1, 100) < 50)
+            //{
+            //    MoveStop();
+            //}
+            //else
             {
-                MoveStop();
-            }
-            else
-            {
-                MoveBy(Random.Range(-2f, 2f), Random.Range(-2f, 2f));
+                MoveBy(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
             }
         }
         else if (Random.Range(1, 100) < 50)
         {
             MoveStart();
-            MoveBy(Random.Range(-2f, 2f), Random.Range(-2f, 2f));
+            MoveBy(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
         }
     }
 
