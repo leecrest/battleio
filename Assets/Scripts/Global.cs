@@ -7,7 +7,11 @@ public class Global : MonoBehaviour {
     public static Global It;
     void Awake() { It = this; }
 
-
+    public GUISkin MySkin;
+    public Texture2D TexBloodSelf;
+    public Texture2D TexBloodFriend;      // 友方血条前景
+    public Texture2D TexBloodEnemy;      // 敌方血条前景
+    public Texture2D TexBloodBg;     // 血条背景
 
     #region 资源管理
     // 场景资源
@@ -21,13 +25,11 @@ public class Global : MonoBehaviour {
 
     private Stack<FighterHero> m_FighterHeroPool;
     private Stack<FighterItem> m_FighterItemPool;
-    private Stack<FighterBullet> m_FighterBulletPool;
 
     void InitPools()
     {
         m_FighterHeroPool = new Stack<FighterHero>();
         m_FighterItemPool = new Stack<FighterItem>();
-        m_FighterBulletPool = new Stack<FighterBullet>();
     }
 
     public GameObject LoadScene(int id, Transform parent)
@@ -39,7 +41,7 @@ public class Global : MonoBehaviour {
         return obj;
     }
 
-    public FighterHero NewFighterHero(int id, float x, float z, Transform parent)
+    public FighterHero NewFighterHero(int fid, int id, float x, float z)
     {
         FighterHero hero;
         if (m_FighterHeroPool.Count > 0)
@@ -50,22 +52,25 @@ public class Global : MonoBehaviour {
         {
             hero = Instantiate(m_FighterHeroPrefabs[id]);
         }
-        hero.transform.parent = parent;
+        hero.transform.parent = CombatMgr.It.ObjRoot;
         hero.transform.rotation = Quaternion.identity;
         hero.transform.position = new Vector3(x, 0, z);
         hero.transform.localScale = new Vector3(5, 5, 5);
         hero.gameObject.SetActive(true);
-        hero.Init();
+        hero.Fid = fid;
+        hero.name = "hero_" + fid;
+        hero.OnCreate();
         return hero;
     }
 
     public void ReleaseHero(FighterHero hero)
     {
+        hero.OnDestroy();
         hero.gameObject.SetActive(false);
         m_FighterHeroPool.Push(hero);
     }
 
-    public void DistroyAllHeros()
+    public void DestroyAllHeros()
     {
         if (m_FighterHeroPool.Count <= 0) return;
         FighterHero hero;
@@ -73,12 +78,13 @@ public class Global : MonoBehaviour {
         {
             hero = m_FighterHeroPool.Pop();
             if (hero == null) break;
+            hero.OnDestroy();
             DestroyObject(hero.gameObject);
         }
         m_FighterHeroPool.Clear();
     }
 
-    public FighterItem NewFighterItem(int id, float x, float z, Transform parent)
+    public FighterItem NewFighterItem(int fid, int id, float x, float z)
     {
         FighterItem item;
         if (m_FighterItemPool.Count > 0)
@@ -89,21 +95,25 @@ public class Global : MonoBehaviour {
         {
             item = Instantiate(m_FighterItemPrefabs[id]);
         }
-        item.transform.parent = parent;
+        item.transform.parent = CombatMgr.It.ObjRoot;
         item.transform.rotation = Quaternion.identity;
         item.transform.position = new Vector3(x, 0, z);
         item.transform.localScale = new Vector3(5, 5, 5);
         item.gameObject.SetActive(true);
+        item.Fid = fid;
+        item.name = "item_" + fid;
+        item.OnCreate();
         return item;
     }
 
-    public void ReleaseHero(FighterItem item)
+    public void ReleaseItem(FighterItem item)
     {
+        item.OnDestroy();
         item.gameObject.SetActive(false);
         m_FighterItemPool.Push(item);
     }
 
-    public void DistroyAllItems()
+    public void DestroyAllItems()
     {
         if (m_FighterItemPool.Count <= 0) return;
         FighterItem item;
@@ -111,48 +121,32 @@ public class Global : MonoBehaviour {
         {
             item = m_FighterItemPool.Pop();
             if (item == null) break;
+            item.OnDestroy();
             DestroyObject(item.gameObject);
         }
         m_FighterItemPool.Clear();
     }
 
-    public FighterBullet NewFighterBullet(int id, float x, float z, Transform parent)
+    public FighterBullet CreateBullet(int fid, int id, float x, float z)
     {
-        FighterBullet item;
-        if (m_FighterBulletPool.Count > 0)
-        {
-            item = m_FighterBulletPool.Pop();
-        }
-        else
-        {
-            item = Instantiate(m_FighterBulletPrefabs[id]);
-        }
-        item.transform.parent = parent;
+        FighterBullet item = Instantiate(m_FighterBulletPrefabs[id]);
+        item.transform.parent = CombatMgr.It.ObjRoot;
         item.transform.rotation = Quaternion.identity;
         item.transform.position = new Vector3(x, 0, z);
         item.transform.localScale = new Vector3(5, 5, 5);
         item.gameObject.SetActive(true);
+        item.Fid = fid;
+        item.OnCreate();
         return item;
     }
 
     public void ReleaseBullet(FighterBullet item)
     {
+        item.OnDestroy();
         item.gameObject.SetActive(false);
-        m_FighterBulletPool.Push(item);
+        DestroyObject(item.gameObject);
     }
 
-    public void DistroyAllBullets()
-    {
-        if (m_FighterBulletPool.Count <= 0) return;
-        FighterBullet item;
-        while (m_FighterBulletPool.Count > 0)
-        {
-            item = m_FighterBulletPool.Pop();
-            if (item == null) break;
-            DestroyObject(item.gameObject);
-        }
-        m_FighterBulletPool.Clear();
-    }
     #endregion
 
 
@@ -193,5 +187,11 @@ public class Global : MonoBehaviour {
         InitPools();
         InitPanels();
         ShowPanel(0);
+    }
+
+    void Destroy()
+    {
+        DestroyAllHeros();
+        DestroyAllItems();
     }
 }

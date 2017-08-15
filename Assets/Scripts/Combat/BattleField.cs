@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FighterItem : FighterBase
-{
+// 战场逻辑处理基类
 
+public class BattleField : Battle
+{
+    
 	
 }

@@ -154,12 +154,15 @@
     <Compile Include="Assets\EasyTouchBundle\EasyTouchControls\Plugins\ETCInput.cs" />
     <Compile Include="Assets\EasyTouchBundle\EasyTouchControls\Plugins\ETCJoystick.cs" />
     <Compile Include="Assets\EasyTouchBundle\EasyTouchControls\Plugins\ETCTouchPad.cs" />
+    <Compile Include="Assets\Scripts\Combat\Battle.cs" />
+    <Compile Include="Assets\Scripts\Combat\BattleField.cs" />
+    <Compile Include="Assets\Scripts\Combat\BattleTest.cs" />
+    <Compile Include="Assets\Scripts\Combat\FighterBase.cs" />
     <Compile Include="Assets\Scripts\Combat\FighterBullet.cs" />
     <Compile Include="Assets\Scripts\Combat\FighterHero.cs" />
     <Compile Include="Assets\Scripts\Combat\FighterItem.cs" />
     <Compile Include="Assets\Scripts\CombatMgr.cs" />
     <Compile Include="Assets\Scripts\Global.cs" />
-    <Compile Include="Assets\Scripts\Hero.cs" />
     <Compile Include="Assets\Scripts\Panel\PanelBase.cs" />
     <Compile Include="Assets\Scripts\Panel\PanelCombat.cs" />
     <Compile Include="Assets\Scripts\Panel\PanelHome.cs" />

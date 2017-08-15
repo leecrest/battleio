@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FighterBullet : MonoBehaviour {
+public class FighterBullet : FighterBase {
 
 	void Start () {
 		

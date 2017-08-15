@@ -6,17 +6,17 @@ public class CombatMgr : MonoBehaviour {
     public static CombatMgr It;
     void Awake() { It = this; }
 
-    public Transform m_SceneRoot;
-    public Transform m_ObjRoot;
+    public Transform SceneRoot;
+    public Transform ObjRoot;
     public ETCJoystick m_Joystick;
-
-    private FighterHero m_MainHero;
 
     private int m_SceneID;
     private int m_LastSceneID;
     private GameObject m_SceneObj;
+    private Battle m_Battle;
 
-    void Start () {
+    void Start ()
+    {
         m_SceneID = -1;
         m_LastSceneID = -1;
         m_SceneObj = null;
@@ -24,7 +24,6 @@ public class CombatMgr : MonoBehaviour {
 	
     public void CombatReady()
     {
-        CameraReset();
         m_Joystick.activated = false;
     }
 
@@ -40,16 +39,11 @@ public class CombatMgr : MonoBehaviour {
         // 检查是否需要加载场景
         if (m_SceneObj == null)
         {
-            m_SceneObj = Global.It.LoadScene(m_SceneID, m_SceneRoot);
+            m_SceneObj = Global.It.LoadScene(m_SceneID, SceneRoot);
+            m_Battle = m_SceneObj.GetComponent<Battle>();
         }
         m_LastSceneID = m_SceneID;
-
-        // 创建主角，并将镜头绑定到主角头上
-        CreateHero(true, 0, 0);
-        for (int i = 0; i < 20; i++)
-        {
-            CreateHero(false, Random.Range(-10f,10f), Random.Range(-10f,10f));
-        }
+        m_Battle.BattleStart();
         m_Joystick.activated = true;
         m_Joystick.enabled = true;
     }
@@ -57,75 +51,42 @@ public class CombatMgr : MonoBehaviour {
     public void CombatOver()
     {
         m_Joystick.activated = false;
-        CameraReset();
+        m_Battle.BattleOver();
     }
 
-    void CreateHero(bool isMain, float x, float z)
+    public void CombatExit()
     {
-        FighterHero hero = Global.It.NewFighterHero(0, x, z, m_ObjRoot);
-        hero.IsMain = isMain;
-        if (isMain)
-        {
-            m_MainHero = hero;
-            //m_Joystick.axisX.directTransform = hero.transform;
-            UpdateCamera();
-        }
+        m_Battle.BattleExit();
+        m_Battle = null;
     }
 
-    #region 主角对象池
     
 
-    #endregion
-
-    #region 镜头控制
-    public void CameraReset()
-    {
-        Camera.main.transform.position = new Vector3(0, 10, 25);
-        Camera.main.transform.rotation = Quaternion.identity;
-        Camera.main.transform.Rotate(Vector3.right, 45);
-    }
-
-    void UpdateCamera()
-    {
-        if (m_MainHero == null) return;
-        Vector3 dst = m_MainHero.transform.position;
-        Vector3 src = Camera.main.transform.position;
-        dst.y = 3;
-        dst.z -= 3;
-        Camera.main.transform.position = dst;
-    }
-
-    #endregion
+    
 
     #region 输入控制
-    
     public void OnJoystickMoveStart()
     {
-        // 主角进入移动状态
-        if (m_MainHero) m_MainHero.StartMove();
+        if (m_Battle == null) return;
+        m_Battle.ReqMainMoveStart();
     }
 
     public void OnJoystickMove(Vector2 vec)
     {
-        if (m_MainHero)
-        {
-            m_MainHero.MoveBy(vec.x, vec.y);
-            UpdateCamera();
-        }
-        else
-        {
-            Transform tf = Camera.main.transform;
-            Vector3 pos = tf.position;
-            pos.x -= vec.x * 0.05f;
-            pos.z -= vec.y * 0.05f;
-            tf.position = pos;
-        }
+        if (m_Battle == null) return;
+        m_Battle.ReqMainMove(vec.x, vec.y);
     }
 
     public void OnJoystickMoveEnd()
     {
-        if (m_MainHero) m_MainHero.StopMove();
+        if (m_Battle == null) return;
+        m_Battle.ReqMainMoveStop();
     }
 
+    public void OnUseSkill(int idx)
+    {
+        if (m_Battle == null) return;
+        m_Battle.ReqMainUseSkill(idx);
+    }
     #endregion
 }
