@@ -29,7 +29,7 @@ public class CombatMgr : MonoBehaviour {
 
     public void CombatStart()
     {
-        m_SceneID = 1;
+        m_SceneID = 0;
         // 检查是否要销毁原场景
         if (m_SceneObj != null && m_LastSceneID != m_SceneID)
         {

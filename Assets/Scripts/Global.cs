@@ -55,7 +55,7 @@ public class Global : MonoBehaviour {
         hero.transform.parent = CombatMgr.It.ObjRoot;
         hero.transform.rotation = Quaternion.identity;
         hero.transform.position = new Vector3(x, 0, z);
-        hero.transform.localScale = new Vector3(5, 5, 5);
+        hero.transform.localScale = new Vector3(15, 15, 15);
         hero.gameObject.SetActive(true);
         hero.Fid = fid;
         hero.name = "hero_" + fid;
@@ -184,6 +184,7 @@ public class Global : MonoBehaviour {
 
     void Start()
     {
+        Setting.LoadSetting();
         InitPools();
         InitPanels();
         ShowPanel(0);
@@ -191,6 +192,7 @@ public class Global : MonoBehaviour {
 
     void Destroy()
     {
+        Setting.UnloadSetting();
         DestroyAllHeros();
         DestroyAllItems();
     }

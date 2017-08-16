@@ -116,7 +116,7 @@ public class Battle : MonoBehaviour
         if (m_MainHero == null) return;
         Vector3 dst = m_MainHero.transform.position;
         Vector3 src = Camera.main.transform.position;
-        dst.y = 4;
+        dst.y = 10;
         dst.z -= 1;
         Camera.main.transform.position = dst;
     }
