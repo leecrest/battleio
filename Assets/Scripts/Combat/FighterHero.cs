@@ -80,21 +80,22 @@ public class FighterHero : FighterBase
     {
         if (m_Moving) return;
         m_Moving = true;
-        Animator anim = GetComponent<Animator>();
-        anim.Play("Run");
+        //Animator anim = GetComponent<Animator>();
+        //anim.Play("Run");
     }
 
     public void MoveStop()
     {
         if (!m_Moving) return;
         m_Moving = false;
-        Animator anim = GetComponent<Animator>();
-        anim.Play("Idle");
+        //Animator anim = GetComponent<Animator>();
+        //anim.Play("Idle");
     }
 
     public void MoveBy(float x, float z)
     {
         float angle = Vector2.SignedAngle(Vector2.down, new Vector2(x, z));
+        angle += Setting.CHAR_FACE_OFFSET;
         transform.rotation = Quaternion.AngleAxis(angle, Vector2.down);
         Vector3 pos = transform.position;
         if (Mathf.Approximately(x, 0f))
@@ -118,8 +119,10 @@ public class FighterHero : FighterBase
 
     public void FaceTo(float x, float z)
     {
-        float angle = Vector2.SignedAngle(Vector2.down, new Vector2(x, z));
-        transform.rotation = Quaternion.AngleAxis(angle, Vector2.down);
+        float angle = Vector2.SignedAngle(Vector2.up, new Vector2(x, z));
+        angle += Setting.CHAR_FACE_OFFSET;
+        if (IsMain) Debug.Log(angle);
+        transform.rotation = Quaternion.AngleAxis(angle, Vector2.up);
     }
 
     #region AI机器人

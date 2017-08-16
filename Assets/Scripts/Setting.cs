@@ -16,6 +16,9 @@ public struct STScene
 
 public class Setting
 {
+    // 角色朝向偏移角度
+    public static float CHAR_FACE_OFFSET = 90f;
+
     public static void LoadSetting()
     {
         

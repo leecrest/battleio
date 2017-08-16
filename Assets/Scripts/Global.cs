@@ -54,8 +54,8 @@ public class Global : MonoBehaviour {
         }
         hero.transform.parent = CombatMgr.It.ObjRoot;
         hero.transform.rotation = Quaternion.identity;
-        hero.transform.position = new Vector3(x, 0, z);
-        hero.transform.localScale = new Vector3(15, 15, 15);
+        hero.transform.position = new Vector3(x, 2, z);
+        hero.transform.localScale = new Vector3(2, 2, 2);
         hero.gameObject.SetActive(true);
         hero.Fid = fid;
         hero.name = "hero_" + fid;

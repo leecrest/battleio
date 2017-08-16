@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2015
+# Visual Studio 2017
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "battleio", "battleio.csproj", "{5B512A92-7BE2-0A8F-677D-B929CDC414DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "battleio.Plugins", "battleio.Plugins.csproj", "{8D3A8E56-6B51-8311-3916-7B7E17BFED55}"
