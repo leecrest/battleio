@@ -28,17 +28,17 @@ public class Battle : MonoBehaviour
     {
         foreach (FighterHero obj in m_Heros.Values)
         {
-            Global.It.ReleaseHero(obj);
+            ResMgr.It.ReleaseHero(obj);
         }
         m_Heros.Clear();
         foreach (FighterItem obj in m_Items.Values)
         {
-            Global.It.ReleaseItem(obj);
+            ResMgr.It.ReleaseItem(obj);
         }
         m_Items.Clear();
         foreach (FighterBullet obj in m_Bullets.Values)
         {
-            Global.It.ReleaseBullet(obj);
+            ResMgr.It.ReleaseBullet(obj);
         }
         m_Bullets.Clear();
     }
@@ -51,7 +51,7 @@ public class Battle : MonoBehaviour
 
     protected FighterHero AddHero(bool isMain, int fid, int id, float x, float z)
     {
-        FighterHero hero = Global.It.NewFighterHero(fid, id, x, z);
+        FighterHero hero = ResMgr.It.NewFighterHero(fid, id, x, z);
         hero.IsMain = isMain;
         m_Heros.Add(fid, hero);
         if (isMain)
@@ -67,12 +67,12 @@ public class Battle : MonoBehaviour
         FighterHero hero;
         if (!m_Heros.TryGetValue(fid, out hero)) return;
         m_Heros.Remove(fid);
-        Global.It.ReleaseHero(hero);
+        ResMgr.It.ReleaseHero(hero);
     }
 
     protected FighterItem AddItem(int fid, int id, float x, float z)
     {
-        FighterItem item = Global.It.NewFighterItem(fid, id, x, z);
+        FighterItem item = ResMgr.It.NewFighterItem(fid, id, x, z);
 
         m_Items.Add(fid, item);
         return item;
@@ -83,13 +83,13 @@ public class Battle : MonoBehaviour
         FighterItem item;
         if (!m_Items.TryGetValue(fid, out item)) return;
         m_Items.Remove(fid);
-        Global.It.ReleaseItem(item);
+        ResMgr.It.ReleaseItem(item);
     }
 
     protected FighterBullet AddBullet(int id, float x, float z)
     {
         int fid = NewFid();
-        FighterBullet bullet = Global.It.CreateBullet(fid, id, x, z);
+        FighterBullet bullet = ResMgr.It.CreateBullet(fid, id, x, z);
         m_Bullets.Add(fid, bullet);
         return bullet;
     }
@@ -99,7 +99,7 @@ public class Battle : MonoBehaviour
         FighterBullet bullet;
         if (!m_Bullets.TryGetValue(fid, out bullet)) return;
         m_Bullets.Remove(fid);
-        Global.It.ReleaseBullet(bullet);
+        ResMgr.It.ReleaseBullet(bullet);
     }
 
 
