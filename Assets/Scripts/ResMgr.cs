@@ -9,26 +9,17 @@ public class ResMgr : MonoBehaviour
 
     // 场景资源
     public GameObject[] m_ScenePrefabs;
-    // 战斗单位资源
-    public FighterHero[] m_FighterHeroPrefabs;
-    // 道具资源
-    public FighterItem[] m_FighterItemPrefabs;
-    // 子弹资源
-    public FighterBullet[] m_FighterBulletPrefabs;
-
-    private Stack<FighterHero> m_FighterHeroPool;
-    private Stack<FighterItem> m_FighterItemPool;
+    // 人物资源
+    public GameObject[] m_HeroPrefabs;
+    // 武器资源
+    public WeaponBase[] m_WeaponPrefabs;
 
     public void OnInit()
     {
-        m_FighterHeroPool = new Stack<FighterHero>();
-        m_FighterItemPool = new Stack<FighterItem>();
     }
 
     public void OnUninit()
     {
-        DestroyAllHeros();
-        DestroyAllItems();
     }
 
     public GameObject LoadScene(int id, Transform parent)
@@ -37,112 +28,48 @@ public class ResMgr : MonoBehaviour
         obj.transform.rotation = Quaternion.identity;
         obj.transform.position = Vector3.zero;
         obj.transform.parent = parent;
+        obj.SetActive(true);
         return obj;
     }
 
-    public FighterHero NewFighterHero(int fid, int id, float x, float z)
+    public FighterHero NewHero(int fid, int id, float x, float z)
     {
-        FighterHero hero;
-        if (m_FighterHeroPool.Count > 0)
-        {
-            hero = m_FighterHeroPool.Pop();
-        }
-        else
-        {
-            hero = Instantiate(m_FighterHeroPrefabs[id]);
-        }
+        // 加载人物模型
+        GameObject obj = Instantiate(m_HeroPrefabs[id]);
+        // 加载脚本
+        FighterHero hero = obj.AddComponent<FighterHero>();
         hero.transform.parent = CombatMgr.It.ObjRoot;
         hero.transform.rotation = Quaternion.identity;
         hero.transform.position = new Vector3(x, 2, z);
-        hero.transform.localScale = new Vector3(2, 2, 2);
+        hero.transform.localScale = new Vector3(1, 1, 1);
         hero.gameObject.SetActive(true);
         hero.Fid = fid;
         hero.name = "hero_" + fid;
-        hero.OnCreate();
+        hero.OnInit();
         return hero;
     }
 
     public void ReleaseHero(FighterHero hero)
     {
-        hero.OnDestroy();
+        hero.OnUninit();
         hero.gameObject.SetActive(false);
-        m_FighterHeroPool.Push(hero);
+        DestroyObject(hero.gameObject);
     }
 
-    public void DestroyAllHeros()
+    public WeaponBase NewWeapon(int id)
     {
-        if (m_FighterHeroPool.Count <= 0) return;
-        FighterHero hero;
-        while (m_FighterHeroPool.Count > 0)
-        {
-            hero = m_FighterHeroPool.Pop();
-            if (hero == null) break;
-            hero.OnDestroy();
-            DestroyObject(hero.gameObject);
-        }
-        m_FighterHeroPool.Clear();
+        // 加载模型
+        WeaponBase obj = Instantiate(m_WeaponPrefabs[id]);
+        obj.gameObject.SetActive(true);
+        obj.ID = id;
+        obj.OnInit();
+        return obj;
     }
 
-    public FighterItem NewFighterItem(int fid, int id, float x, float z)
+    public void ReleaseWeapon(WeaponBase obj)
     {
-        FighterItem item;
-        if (m_FighterItemPool.Count > 0)
-        {
-            item = m_FighterItemPool.Pop();
-        }
-        else
-        {
-            item = Instantiate(m_FighterItemPrefabs[id]);
-        }
-        item.transform.parent = CombatMgr.It.ObjRoot;
-        item.transform.rotation = Quaternion.identity;
-        item.transform.position = new Vector3(x, 0, z);
-        item.transform.localScale = new Vector3(5, 5, 5);
-        item.gameObject.SetActive(true);
-        item.Fid = fid;
-        item.name = "item_" + fid;
-        item.OnCreate();
-        return item;
-    }
-
-    public void ReleaseItem(FighterItem item)
-    {
-        item.OnDestroy();
-        item.gameObject.SetActive(false);
-        m_FighterItemPool.Push(item);
-    }
-
-    public void DestroyAllItems()
-    {
-        if (m_FighterItemPool.Count <= 0) return;
-        FighterItem item;
-        while (m_FighterItemPool.Count > 0)
-        {
-            item = m_FighterItemPool.Pop();
-            if (item == null) break;
-            item.OnDestroy();
-            DestroyObject(item.gameObject);
-        }
-        m_FighterItemPool.Clear();
-    }
-
-    public FighterBullet CreateBullet(int fid, int id, float x, float z)
-    {
-        FighterBullet item = Instantiate(m_FighterBulletPrefabs[id]);
-        item.transform.parent = CombatMgr.It.ObjRoot;
-        item.transform.rotation = Quaternion.identity;
-        item.transform.position = new Vector3(x, 0, z);
-        item.transform.localScale = new Vector3(5, 5, 5);
-        item.gameObject.SetActive(true);
-        item.Fid = fid;
-        item.OnCreate();
-        return item;
-    }
-
-    public void ReleaseBullet(FighterBullet item)
-    {
-        item.OnDestroy();
-        item.gameObject.SetActive(false);
-        DestroyObject(item.gameObject);
+        obj.OnUninit();
+        obj.gameObject.SetActive(false);
+        DestroyObject(obj.gameObject);
     }
 }

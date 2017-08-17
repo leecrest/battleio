@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CombatMgr : MonoBehaviour {
+public class CombatMgr : MonoBehaviour
+{
     public static CombatMgr It;
     void Awake() { It = this; }
+
+    [HideInInspector]
+    public EnCombatState State;
 
     public Transform SceneRoot;
     public Transform ObjRoot;
@@ -13,11 +17,11 @@ public class CombatMgr : MonoBehaviour {
     private int m_SceneID;
     private int m_LastSceneID;
     private GameObject m_SceneObj;
+    private MapBase m_SceneMap;
+
     private int m_AllocFid = 0;
     private FighterHero m_MainHero;
-    private Dictionary<int, FighterHero> m_Heros;
-    private Dictionary<int, FighterItem> m_Items;
-    private Dictionary<int, FighterBullet> m_Bullets;
+    protected Dictionary<int, FighterHero> m_Heros;
 
     public void OnInit ()
     {
@@ -25,8 +29,6 @@ public class CombatMgr : MonoBehaviour {
         m_LastSceneID = -1;
         m_SceneObj = null;
         m_Heros = new Dictionary<int, FighterHero>();
-        m_Items = new Dictionary<int, FighterItem>();
-        m_Bullets = new Dictionary<int, FighterBullet>();
     }
 
     public void OnUninit()
@@ -38,12 +40,19 @@ public class CombatMgr : MonoBehaviour {
     // 战斗准备
     public void CombatReady()
     {
+        CameraReset();
+        State = EnCombatState.Ready;
         m_Joystick.activated = false;
+        m_Joystick.onMoveStart.AddListener(OnJoystickMoveStart);
+        m_Joystick.onMove.AddListener(OnJoystickMove);
+        m_Joystick.onMoveEnd.AddListener(OnJoystickMoveEnd);
     }
 
     // 战斗开始
     public void CombatStart()
     {
+        if (State == EnCombatState.Start) return;
+        State = EnCombatState.Start;
         m_SceneID = 0;
         // 检查是否要销毁原场景
         if (m_SceneObj != null && m_LastSceneID != m_SceneID)
@@ -55,7 +64,9 @@ public class CombatMgr : MonoBehaviour {
         if (m_SceneObj == null)
         {
             m_SceneObj = ResMgr.It.LoadScene(m_SceneID, SceneRoot);
+            m_SceneMap = m_SceneObj.GetComponent<MapBase>();
         }
+        if (m_SceneMap) m_SceneMap.OnStart();
         m_LastSceneID = m_SceneID;
         m_Joystick.activated = true;
         m_Joystick.enabled = true;
@@ -64,28 +75,50 @@ public class CombatMgr : MonoBehaviour {
     // 战斗结束
     public void CombatOver()
     {
+        State = EnCombatState.Over;
         m_Joystick.activated = false;
         CameraReset();
+        if (m_SceneMap) m_SceneMap.OnOver();
     }
 
     // 战斗退出
     public void CombatExit()
     {
+        State = EnCombatState.Ready;
         foreach (FighterHero obj in m_Heros.Values)
         {
             ResMgr.It.ReleaseHero(obj);
         }
         m_Heros.Clear();
-        foreach (FighterItem obj in m_Items.Values)
+        if (m_SceneMap) m_SceneMap.OnExit();
+    }
+
+    protected int NewFid()
+    {
+        m_AllocFid++;
+        return m_AllocFid;
+    }
+
+    public FighterHero AddHero(bool isMain, int fid, int id, float x, float z)
+    {
+        if (fid <= 0) fid = NewFid();
+        FighterHero hero = ResMgr.It.NewHero(fid, id, x, z);
+        hero.IsMain = isMain;
+        m_Heros.Add(fid, hero);
+        if (isMain)
         {
-            ResMgr.It.ReleaseItem(obj);
+            m_MainHero = hero;
+            UpdateCamera();
         }
-        m_Items.Clear();
-        foreach (FighterBullet obj in m_Bullets.Values)
-        {
-            ResMgr.It.ReleaseBullet(obj);
-        }
-        m_Bullets.Clear();
+        return hero;
+    }
+
+    public void DelHero(int fid)
+    {
+        FighterHero hero;
+        if (!m_Heros.TryGetValue(fid, out hero)) return;
+        m_Heros.Remove(fid);
+        ResMgr.It.ReleaseHero(hero);
     }
 
     
@@ -107,8 +140,23 @@ public class CombatMgr : MonoBehaviour {
         {
             Transform tf = Camera.main.transform;
             Vector3 pos = tf.position;
-            pos.x -= vec.x * 0.05f;
-            pos.z -= vec.y * 0.05f;
+            float speed = CONST.CAMERA_SPEED;
+            if (Mathf.Approximately(vec.x, 0f))
+            {
+                if (Mathf.Approximately(vec.y, 0f)) return;
+                pos.z -= vec.y > 0f ? speed : -speed;
+            }
+            else if (Mathf.Approximately(vec.y, 0f))
+            {
+                if (Mathf.Approximately(vec.x, 0f)) return;
+                pos.x -= vec.x > 0f ? speed : -speed;
+            }
+            else
+            {
+                float delta = Mathf.Atan2(vec.x, vec.y);
+                pos.x -= speed * Mathf.Sin(delta);
+                pos.z -= speed * Mathf.Cos(delta);
+            }
             tf.position = pos;
         }
     }
@@ -124,72 +172,28 @@ public class CombatMgr : MonoBehaviour {
         if (m_MainHero == null) return;
         OnUseSkill(m_MainHero, idx);
     }
-    #endregion
 
-    private int NewFid()
+    public void GM_ChangeWeapon()
     {
-        m_AllocFid++;
-        return m_AllocFid;
-    }
-
-    protected FighterHero AddHero(bool isMain, int fid, int id, float x, float z)
-    {
-        FighterHero hero = ResMgr.It.NewFighterHero(fid, id, x, z);
-        hero.IsMain = isMain;
-        m_Heros.Add(fid, hero);
-        if (isMain)
+        if (m_MainHero == null) return;
+        int id = 0;
+        if (m_MainHero.Weapon)
         {
-            m_MainHero = hero;
-            UpdateCamera();
+            id = m_MainHero.Weapon.ID + 1;
+            if (id > ResMgr.It.m_WeaponPrefabs.Length - 1)
+            {
+                id = 0;
+            }
         }
-        return hero;
+        m_MainHero.ChangeWeapon(id);
     }
 
-    protected void DelHero(int fid)
-    {
-        FighterHero hero;
-        if (!m_Heros.TryGetValue(fid, out hero)) return;
-        m_Heros.Remove(fid);
-        ResMgr.It.ReleaseHero(hero);
-    }
-
-    protected FighterItem AddItem(int fid, int id, float x, float z)
-    {
-        FighterItem item = ResMgr.It.NewFighterItem(fid, id, x, z);
-
-        m_Items.Add(fid, item);
-        return item;
-    }
-
-    protected void DelItem(int fid)
-    {
-        FighterItem item;
-        if (!m_Items.TryGetValue(fid, out item)) return;
-        m_Items.Remove(fid);
-        ResMgr.It.ReleaseItem(item);
-    }
-
-    protected FighterBullet AddBullet(int id, float x, float z)
-    {
-        int fid = NewFid();
-        FighterBullet bullet = ResMgr.It.CreateBullet(fid, id, x, z);
-        m_Bullets.Add(fid, bullet);
-        return bullet;
-    }
-
-    protected void DelBullet(int fid)
-    {
-        FighterBullet bullet;
-        if (!m_Bullets.TryGetValue(fid, out bullet)) return;
-        m_Bullets.Remove(fid);
-        ResMgr.It.ReleaseBullet(bullet);
-    }
-
+    #endregion
 
     #region 镜头控制
     protected void CameraReset()
     {
-        Camera.main.transform.position = new Vector3(0, 10, 25);
+        Camera.main.transform.position = new Vector3(0, CONST.CAMERA_Z, 0);
         //Camera.main.transform.rotation = Quaternion.identity;
         //Camera.main.transform.Rotate(Vector3.right, 80);
     }
@@ -199,11 +203,12 @@ public class CombatMgr : MonoBehaviour {
         if (m_MainHero == null) return;
         Vector3 dst = m_MainHero.transform.position;
         Vector3 src = Camera.main.transform.position;
-        dst.y = 10;
+        dst.y = CONST.CAMERA_Z;
         dst.z -= 1;
         Camera.main.transform.position = dst;
     }
     #endregion
+
 
     #region 单位控制
     public void OnMoveStart(FighterHero hero)

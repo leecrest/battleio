@@ -4,11 +4,5 @@ using UnityEngine;
 
 public class FighterBullet : FighterBase {
 
-	void Start () {
-		
-	}
 	
-	void Update () {
-		
-	}
 }

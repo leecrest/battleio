@@ -15,8 +15,8 @@ public class PanelHome : PanelBase {
 	void Update () {
         if (Input.GetMouseButtonDown(0))
         {
-            Global.It.HidePanel(0);
-            Global.It.ShowPanel(1);
+            UIMgr.It.HidePanel(0);
+            UIMgr.It.ShowPanel(1);
         }
     }
 

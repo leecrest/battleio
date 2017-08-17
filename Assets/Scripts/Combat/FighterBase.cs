@@ -7,12 +7,12 @@ public class FighterBase : MonoBehaviour {
     [HideInInspector]
     public int Fid;
 
-    public virtual void OnCreate()
+    public virtual void OnInit()
     {
 
     }
 
-    public virtual void OnDestroy()
+    public virtual void OnUninit()
     {
 
     }

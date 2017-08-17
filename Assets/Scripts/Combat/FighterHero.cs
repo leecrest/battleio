@@ -12,46 +12,14 @@ public class FighterHero : FighterBase
     public Vector2 BloodSize = new Vector2(150, 20);
     public Vector2 NameSize = new Vector2(200, 50);
 
+
     private bool m_Moving = false;      // 是否移动中
     private bool m_Fighting = false;    // 是否战斗中
 
+    public WeaponBase Weapon;
     public int CurHP = 50;
     public int MaxHP = 100;
     public float Speed = 0.05f;
-
-    // Use this for initialization
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        /*if (IsMain)
-        {
-            Vector3 dst = transform.position;
-            float offset = Time.deltaTime;
-            bool move = false;
-            if (Input.GetKey(KeyCode.W)) { dst.z += offset; move = true; }
-            if (Input.GetKey(KeyCode.S)) { dst.z -= offset; move = true; }
-            if (Input.GetKey(KeyCode.A)) { dst.x -= offset; move = true; }
-            if (Input.GetKey(KeyCode.D)) { dst.x += offset; move = true; }
-            if (move)
-            {
-                if (!m_Moving) StartMove();
-                transform.position = dst;
-
-                Vector3 src = Camera.main.transform.position;
-                dst.y = 3;
-                dst.z -= 3;
-                Camera.main.transform.position = dst;
-            }
-            else
-            {
-                if (m_Moving) StopMove();
-            }
-        }*/
-    }
 
     void OnGUI()
     {
@@ -76,6 +44,17 @@ public class FighterHero : FighterBase
             name, Global.It.MySkin.label);
     }
 
+    public override void OnInit()
+    {
+        base.OnInit();
+        Weapon = null;
+    }
+
+    public override void OnUninit()
+    {
+        base.OnUninit();
+    }
+
     public void MoveStart()
     {
         if (m_Moving) return;
@@ -95,7 +74,7 @@ public class FighterHero : FighterBase
     public void MoveBy(float x, float z)
     {
         float angle = Vector2.SignedAngle(Vector2.down, new Vector2(x, z));
-        angle += Setting.CHAR_FACE_OFFSET;
+        angle += CONST.CHAR_FACE_OFFSET;
         transform.rotation = Quaternion.AngleAxis(angle, Vector2.down);
         Vector3 pos = transform.position;
         if (Mathf.Approximately(x, 0f))
@@ -120,7 +99,7 @@ public class FighterHero : FighterBase
     public void FaceTo(float x, float z)
     {
         float angle = Vector2.SignedAngle(Vector2.up, new Vector2(x, z));
-        angle += Setting.CHAR_FACE_OFFSET;
+        angle += CONST.CHAR_FACE_OFFSET;
         if (IsMain) Debug.Log(angle);
         transform.rotation = Quaternion.AngleAxis(angle, Vector2.up);
     }
@@ -158,6 +137,21 @@ public class FighterHero : FighterBase
             MoveStart();
             MoveBy(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
         }
+    }
+
+    #endregion
+
+    #region 武器
+    public void ChangeWeapon(int id)
+    {
+        if (Weapon)
+        {
+            if (Weapon.ID == id) return;
+            ResMgr.It.ReleaseWeapon(Weapon);
+            Weapon = null;
+        }
+        Weapon = ResMgr.It.NewWeapon(id);
+        Weapon.OnAttach(this);
     }
 
     #endregion

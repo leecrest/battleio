@@ -33,6 +33,7 @@ public class Global : MonoBehaviour {
     {
         CombatMgr.It.OnUninit();
         SoundMgr.It.OnUninit();
+        UIMgr.It.OnUninit();
         ResMgr.It.OnUninit();
     }
 }
