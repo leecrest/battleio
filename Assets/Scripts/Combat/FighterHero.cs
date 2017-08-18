@@ -59,16 +59,16 @@ public class FighterHero : FighterBase
     {
         if (m_Moving) return;
         m_Moving = true;
-        //Animator anim = GetComponent<Animator>();
-        //anim.Play("Run");
+        Animator anim = GetComponent<Animator>();
+        anim.Play("char_move");
     }
 
     public void MoveStop()
     {
         if (!m_Moving) return;
         m_Moving = false;
-        //Animator anim = GetComponent<Animator>();
-        //anim.Play("Idle");
+        Animator anim = GetComponent<Animator>();
+        anim.Play("char_idle");
     }
 
     public void MoveBy(float x, float z)
