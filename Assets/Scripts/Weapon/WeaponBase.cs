@@ -20,6 +20,8 @@ public class WeaponBase : MonoBehaviour {
     public string IdleAnim;
     public string AttackAnim;
 
+    // 子弹资源
+    public ShellBase ShellPrefab;
     // 子弹资源编号
     public int ShellID = -1;
     // 子弹数量
@@ -40,6 +42,7 @@ public class WeaponBase : MonoBehaviour {
     {
         Owner = hero;
         transform.parent = hero.transform;
+
     }
 
     public virtual void OnDetach()

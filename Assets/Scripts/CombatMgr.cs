@@ -14,6 +14,7 @@ public class CombatMgr : MonoBehaviour
     public Transform ObjRoot;
     public ETCJoystick m_Joystick;
 
+    private bool m_Moving;
     private int m_SceneID;
     private int m_LastSceneID;
     private GameObject m_SceneObj;
@@ -25,6 +26,7 @@ public class CombatMgr : MonoBehaviour
 
     public void OnInit ()
     {
+        m_Moving = false;
         m_SceneID = -1;
         m_LastSceneID = -1;
         m_SceneObj = null;
@@ -34,6 +36,39 @@ public class CombatMgr : MonoBehaviour
     public void OnUninit()
     {
 
+    }
+
+    void Update()
+    {
+#if UNITY_STANDALONE_WIN
+        Vector2 delta = new Vector2(0, 0);
+        bool move = false;
+        if (Input.GetKey(KeyCode.W)) { delta.y = -1f; move = true; }
+        if (Input.GetKey(KeyCode.S)) { delta.y = 1f; move = true; }
+        if (Input.GetKey(KeyCode.A)) { delta.x = 1f; move = true; }
+        if (Input.GetKey(KeyCode.D)) { delta.x = -1f; move = true; }
+
+        if (m_Moving)
+        {
+            if (move)
+            {
+                OnJoystickMove(delta);
+            }
+            else
+            {
+                m_Moving = false;
+                if (m_MainHero) OnJoystickMoveEnd();
+            }
+        }
+        else if (move)
+        {
+            m_Moving = true;
+            if (m_MainHero)
+            {
+                OnJoystickMoveStart();
+            }
+        }
+#endif
     }
 	
 

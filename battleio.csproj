@@ -178,7 +178,9 @@
     <Compile Include="Assets\Scripts\SoundMgr.cs" />
     <Compile Include="Assets\Scripts\UIMgr.cs" />
     <Compile Include="Assets\Scripts\Weapon\Arrow.cs" />
+    <Compile Include="Assets\Scripts\Weapon\ArrowShell.cs" />
     <Compile Include="Assets\Scripts\Weapon\Daliandao.cs" />
+    <Compile Include="Assets\Scripts\Weapon\ShellBase.cs" />
     <Compile Include="Assets\Scripts\Weapon\WeaponBase.cs" />
   </ItemGroup>
   <ItemGroup>
