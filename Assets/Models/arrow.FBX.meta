@@ -1,17 +1,16 @@
 fileFormatVersion: 2
-guid: 77ec281544fbc5145bdebd452bc72fd2
-timeCreated: 1502982256
+guid: 3d2d6d20593f2214cbe241d9206aec11
+timeCreated: 1503133865
 licenseType: Free
 ModelImporter:
   serializedVersion: 21
   fileIDToRecycleName:
-    100000: feibiao
-    100002: //RootNode
-    400000: feibiao
-    400002: //RootNode
-    2300000: feibiao
-    3300000: feibiao
-    4300000: feibiao
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: arrow
+    9500000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
@@ -81,7 +80,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 0
+  animationType: 2
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

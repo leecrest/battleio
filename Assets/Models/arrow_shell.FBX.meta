@@ -1,17 +1,16 @@
 fileFormatVersion: 2
-guid: 691f16f65f1558e4593fa48b2de3deb6
-timeCreated: 1502895783
+guid: 3d07b009f79549a4d98c8af53bc0d67b
+timeCreated: 1503129907
 licenseType: Free
 ModelImporter:
   serializedVersion: 21
   fileIDToRecycleName:
-    100000: qiang01
-    100002: //RootNode
-    400000: qiang01
-    400002: //RootNode
-    2300000: qiang01
-    3300000: qiang01
-    4300000: qiang01
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: arrow01
+    9500000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
@@ -81,7 +80,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 0
+  animationType: 2
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

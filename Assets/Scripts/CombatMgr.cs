@@ -202,10 +202,10 @@ public class CombatMgr : MonoBehaviour
         OnMoveStop(m_MainHero);
     }
 
-    public void OnUseSkill(int idx)
+    public void OnHeroShoot()
     {
         if (m_MainHero == null) return;
-        OnUseSkill(m_MainHero, idx);
+        m_MainHero.Shoot();
     }
 
     public void GM_ChangeWeapon()
@@ -260,11 +260,6 @@ public class CombatMgr : MonoBehaviour
     public void OnMoveStop(FighterHero hero)
     {
         hero.MoveStop();
-    }
-
-    public void OnUseSkill(FighterHero hero, int idx)
-    {
-
     }
 
     #endregion

@@ -59,16 +59,16 @@ public class FighterHero : FighterBase
     {
         if (m_Moving) return;
         m_Moving = true;
-        Animator anim = GetComponent<Animator>();
-        anim.Play("char_move");
+        //Animator anim = GetComponent<Animator>();
+        //anim.Play("char_move");
     }
 
     public void MoveStop()
     {
         if (!m_Moving) return;
         m_Moving = false;
-        Animator anim = GetComponent<Animator>();
-        anim.Play("char_idle");
+        //Animator anim = GetComponent<Animator>();
+        //anim.Play("char_idle");
     }
 
     public void MoveBy(float x, float z)
@@ -152,6 +152,16 @@ public class FighterHero : FighterBase
         }
         Weapon = ResMgr.It.NewWeapon(id);
         Weapon.OnAttach(this);
+    }
+
+    // 开火
+    public void Shoot()
+    {
+        if (Weapon.IsShooting) return;
+        // 播放人物的射击动画
+
+        // 执行武器的射击逻辑
+        Weapon.ShootBegin();
     }
 
     #endregion

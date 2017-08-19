@@ -1,17 +1,16 @@
 fileFormatVersion: 2
-guid: 3358d1a0570bb0e458d1cfd0c8e9dc0d
-timeCreated: 1502900667
+guid: d8a208ee7d1ee974bacf7170a5c611ae
+timeCreated: 1503131510
 licenseType: Free
 ModelImporter:
   serializedVersion: 21
   fileIDToRecycleName:
-    100000: gong
-    100002: //RootNode
-    400000: gong
-    400002: //RootNode
-    2300000: gong
-    3300000: gong
-    4300000: gong
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: c1
+    9500000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
@@ -81,7 +80,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 0
+  animationType: 2
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

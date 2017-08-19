@@ -41,7 +41,7 @@ public class ResMgr : MonoBehaviour
         hero.transform.parent = CombatMgr.It.ObjRoot;
         hero.transform.rotation = Quaternion.identity;
         hero.transform.position = new Vector3(x, 2, z);
-        hero.transform.localScale = new Vector3(1, 1, 1);
+        hero.transform.localScale = new Vector3(2, 2, 2);
         hero.gameObject.SetActive(true);
         hero.Fid = fid;
         hero.name = "hero_" + fid;
@@ -62,14 +62,17 @@ public class ResMgr : MonoBehaviour
         WeaponBase obj = Instantiate(m_WeaponPrefabs[id]);
         obj.gameObject.SetActive(true);
         obj.ID = id;
+        obj.name = obj.Name;
         obj.OnInit();
         return obj;
     }
 
     public void ReleaseWeapon(WeaponBase obj)
     {
-        obj.OnUninit();
+        obj.OnDetach();
         obj.gameObject.SetActive(false);
+
+        obj.OnUninit();
         DestroyObject(obj.gameObject);
     }
 }

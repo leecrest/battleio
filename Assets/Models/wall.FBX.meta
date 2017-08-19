@@ -1,17 +1,16 @@
 fileFormatVersion: 2
-guid: ec7cd9ceb22041343bb3d7983244589f
-timeCreated: 1502900623
+guid: d1aa3f40a4f59f24299c44c5784a9214
+timeCreated: 1503134606
 licenseType: Free
 ModelImporter:
   serializedVersion: 21
   fileIDToRecycleName:
-    100000: xin
-    100002: //RootNode
-    400000: xin
-    400002: //RootNode
-    2300000: xin
-    3300000: xin
-    4300000: xin
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: wall
+    9500000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
@@ -81,7 +80,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 0
+  animationType: 2
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

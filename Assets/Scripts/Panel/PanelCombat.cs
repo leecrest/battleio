@@ -5,8 +5,7 @@ using UnityEngine.UI;
 
 public class PanelCombat : PanelBase
 {
-    public Button m_BtnSkill0;
-    public Button m_BtnSkill1;
+    public Button m_BtnShoot;
     public Button m_BtnWeapon;
 
     // Use this for initialization
@@ -23,27 +22,20 @@ public class PanelCombat : PanelBase
     {
         base.Show();
         CombatMgr.It.CombatStart();
-        m_BtnSkill0.onClick.AddListener(OnBtnSkill0);
-        m_BtnSkill1.onClick.AddListener(OnBtnSkill1);
+        m_BtnShoot.onClick.AddListener(OnBtnShoot);
         m_BtnWeapon.onClick.AddListener(OnBtnWeapon);
     }
 
     public override void Hide()
     {
         base.Hide();
-        m_BtnSkill0.onClick.RemoveListener(OnBtnSkill0);
-        m_BtnSkill1.onClick.RemoveListener(OnBtnSkill1);
+        m_BtnShoot.onClick.RemoveListener(OnBtnShoot);
         m_BtnWeapon.onClick.RemoveListener(OnBtnWeapon);
     }
 
-    void OnBtnSkill0()
+    void OnBtnShoot()
     {
-        CombatMgr.It.OnUseSkill(0);
-    }
-
-    void OnBtnSkill1()
-    {
-        CombatMgr.It.OnUseSkill(1);
+        CombatMgr.It.OnHeroShoot();
     }
 
     void OnBtnWeapon()
