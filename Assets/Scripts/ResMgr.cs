@@ -26,7 +26,8 @@ public class ResMgr : MonoBehaviour
     {
         GameObject obj = Instantiate(m_ScenePrefabs[id]);
         obj.transform.rotation = Quaternion.identity;
-        obj.transform.position = Vector3.zero;
+        obj.transform.localPosition = Vector3.zero;
+        obj.transform.localScale = new Vector3(1, 1.5f, 1);
         obj.transform.parent = parent;
         obj.SetActive(true);
         return obj;
