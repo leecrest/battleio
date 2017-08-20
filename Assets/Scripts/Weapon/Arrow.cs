@@ -10,6 +10,8 @@ public class Arrow : WeaponBase
         HasShell = true;
         ShellBack = false;
         ShellCount = 1;
+        ShellSpeed = 3f;
+        ShellDistance = 10f;
     }
 
     public override void OnAttach(FighterHero hero)

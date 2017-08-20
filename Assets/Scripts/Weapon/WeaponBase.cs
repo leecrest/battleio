@@ -27,6 +27,10 @@ public class WeaponBase : MonoBehaviour {
     public bool ShellBack = false;
     // 攻击前摇
     public float TimeAttack = 0f;
+    // 子弹飞行的基础速度
+    public float ShellSpeed = 1f;
+    // 子弹的飞行距离，0表示无限制
+    public float ShellDistance = 10f;
 
 
     // 是否处于发射状态
@@ -113,10 +117,14 @@ public class WeaponBase : MonoBehaviour {
     public virtual void ShootShell()
     {
         ShellBase shell;
+        float speed;
+        float distance;
         for (int i = 0; i < m_Shells.Count; i++)
         {
             shell = m_Shells[i];
-            shell.Shoot(ShellBack);
+            speed = ShellSpeed + Owner.WeaponShellSpeed;
+            distance = ShellDistance + Owner.WeaponShellDistance;
+            shell.Shoot(speed, distance, ShellBack);
         }
         m_Shells.Clear();
     }

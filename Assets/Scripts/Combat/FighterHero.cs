@@ -21,6 +21,10 @@ public class FighterHero : FighterBase
     public int MaxHP = 100;
     public float Speed = 0.05f;
 
+    // 武器加成
+    public float WeaponShellSpeed = 0f;
+    public float WeaponShellDistance = 0f;
+
     void OnGUI()
     {
         //得到NPC头顶在3D世界中的坐标
