@@ -22,4 +22,6 @@ public class CONST
     public static readonly float CAMERA_Z = 8f;
     // 观察时，镜头的移动速度
     public static readonly float CAMERA_SPEED = 0.15f;
+    // 子弹的销毁时间
+    public static readonly float SHELL_DESTROY = 1f;
 }

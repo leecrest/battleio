@@ -24,6 +24,11 @@ public class ShellBase : MonoBehaviour {
     private bool m_Check;
     private GameObject m_Target;
 
+    // 子类属性
+    protected float m_DropPosY;       // 掉落坐标点的Y偏移
+    protected float m_DropAngleX;     // 掉落角度的x
+
+
 
     void FixedUpdate()
     {
@@ -35,7 +40,7 @@ public class ShellBase : MonoBehaviour {
         transform.localPosition = pos;
         if (m_Distance > 0 && Vector3.Distance(m_BeginPos, transform.position) >= m_Distance)
         {
-            FlyEnd();
+            FlyEnd(null);
         }
     }
 
@@ -78,9 +83,39 @@ public class ShellBase : MonoBehaviour {
     }
 
     // 飞行结束
-    void FlyEnd()
+    void FlyEnd(GameObject target)
     {
         State = EnShellState.InTarget;
+        m_Target = target;
+        if (m_Target == null)
+        {
+            // 飞行超时，落在地面上
+            Vector3 pos = transform.localPosition;
+            pos.y = m_DropPosY;
+            transform.localPosition = pos;
+            //Quaternion q = transform.rotation;
+            //transform.rotation = Quaternion.Euler(m_DropAngleX, q.y, q.z);
+            transform.Rotate(Vector3.right, m_DropAngleX);
+        }
+        else
+        {
+            switch (m_Target.tag)
+            {
+                case "wall":
+
+                    break;
+                case "ground":
+
+                    break;
+                case "hero":
+
+                    break;
+                default:
+                    break;
+            }
+            
+        }
+        //DestroyObject(gameObject, CONST.SHELL_DESTROY);
     }
 
     void OnTriggerEnter(Collider collider)
@@ -88,17 +123,7 @@ public class ShellBase : MonoBehaviour {
         if (!m_Check || State != EnShellState.Flying) return;
         if (collider.gameObject == Owner || collider.gameObject == Owner.Owner.gameObject) return;
         if (collider.tag == "shell") return;
-        State = EnShellState.InTarget;
-        m_Target = collider.gameObject;
+        FlyEnd(collider.gameObject);
         Debug.Log(name + "->" + collider.name);
-    }
-    void OnTriggerExit(Collider collider)
-    {
-        if (!m_Check || State != EnShellState.Flying) return;
-        if (collider.gameObject == Owner || collider.gameObject == Owner.Owner.gameObject) return;
-        if (collider.tag == "shell") return;
-        State = EnShellState.InTarget;
-        m_Target = collider.gameObject;
-        Debug.Log(name + "->》" + collider.name);
     }
 }

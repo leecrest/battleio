@@ -19,7 +19,8 @@ public class FighterHero : FighterBase
     public WeaponBase Weapon;
     public int CurHP = 50;
     public int MaxHP = 100;
-    public float Speed = 0.05f;
+    public float MoveSpeed = 0.05f;
+
 
     // 武器加成
     public float WeaponShellSpeed = 0f;
@@ -84,18 +85,18 @@ public class FighterHero : FighterBase
         if (Mathf.Approximately(x, 0f))
         {
             if (Mathf.Approximately(z, 0f)) return;
-            pos.z -= z > 0f ? Speed : -Speed;
+            pos.z -= z > 0f ? MoveSpeed : -MoveSpeed;
         }
         else if (Mathf.Approximately(z, 0f))
         {
             if (Mathf.Approximately(x, 0f)) return;
-            pos.x -= x > 0f ? Speed : -Speed;
+            pos.x -= x > 0f ? MoveSpeed : -MoveSpeed;
         }
         else
         {
             float delta = Mathf.Atan2(x, z);
-            pos.x -= Speed * Mathf.Sin(delta);
-            pos.z -= Speed * Mathf.Cos(delta);
+            pos.x -= MoveSpeed * Mathf.Sin(delta);
+            pos.z -= MoveSpeed * Mathf.Cos(delta);
         }
         transform.position = pos;
     }

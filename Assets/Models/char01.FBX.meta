@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: d8a208ee7d1ee974bacf7170a5c611ae
-timeCreated: 1503131510
+timeCreated: 1503301301
 licenseType: Free
 ModelImporter:
   serializedVersion: 21
@@ -11,6 +11,7 @@ ModelImporter:
     3300000: //RootNode
     4300000: c1
     9500000: //RootNode
+    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
@@ -19,7 +20,7 @@ ModelImporter:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     resampleCurves: 1
-    optimizeGameObjects: 0
+    optimizeGameObjects: 1
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -27,7 +28,7 @@ ModelImporter:
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
-    animationCompression: 1
+    animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -66,7 +67,12 @@ ModelImporter:
   humanDescription:
     serializedVersion: 2
     human: []
-    skeleton: []
+    skeleton:
+    - name: char01(Clone)(Clone)
+      parentName: 
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.000000022515804, y: 0.7071068, z: 0.7071068, w: 0.00000008425436}
+      scale: {x: 0.0254, y: 0.0254, z: 0.0254}
     armTwist: 0.5
     foreArmTwist: 0.5
     upperLegTwist: 0.5
