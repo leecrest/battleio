@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 public class WeaponBase : MonoBehaviour {
-    public int id = 0;
+    public int ID = 0;
     public FighterHero Owner = null;
 
     // 是否处于发射状态
@@ -18,7 +18,7 @@ public class WeaponBase : MonoBehaviour {
 
     public virtual void OnInit()
     {
-        m_Config = ResMgr.It.GetWeaponConfig(id);
+        m_Config = ResMgr.It.GetWeaponConfig(ID);
         HasShell = m_Config.shell > 0;
         if (HasShell) m_Shells = new List<ShellBase>();
     }
@@ -59,7 +59,7 @@ public class WeaponBase : MonoBehaviour {
         int max = Owner.ShellCount + 1;
         for (int i = m_Shells.Count; i < max; i++)
         {
-            obj = ResMgr.It.CreateShell(id, transform);
+            obj = ResMgr.It.CreateShell(ID, transform);
             obj.OnAttach(this);
             m_Shells.Add(obj);
         }
@@ -102,7 +102,7 @@ public class WeaponBase : MonoBehaviour {
         for (int i = 0; i < m_Shells.Count; i++)
         {
             shell = m_Shells[i];
-            shell.Shoot(Owner.ShellSpeed, Owner.ShellDistance, false);
+            shell.Shoot(Owner.ShellSpeed, Owner.ShellDistance, 10, false);
         }
         m_Shells.Clear();
     }

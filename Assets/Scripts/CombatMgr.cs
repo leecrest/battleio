@@ -87,8 +87,8 @@ public class CombatMgr : MonoBehaviour
         }
 #endif
     }
-	
 
+    #region 战斗逻辑
     // 战斗准备
     public void CombatReady()
     {
@@ -151,10 +151,10 @@ public class CombatMgr : MonoBehaviour
         return m_AllocFid;
     }
 
-    public FighterHero AddHero(bool isMain, int fid, int id, float x, float z)
+    public FighterHero AddHero(bool isMain, int id, float x, float z, int fid, string name, int hp, int maxhp)
     {
         if (fid <= 0) fid = NewFid();
-        FighterHero hero = ResMgr.It.CreateHero(fid, id, x, z);
+        FighterHero hero = ResMgr.It.CreateHero(id, x, z, fid, name, hp, maxhp);
         hero.IsMain = isMain;
         m_Heros.Add(fid, hero);
         if (isMain)
@@ -173,7 +173,30 @@ public class CombatMgr : MonoBehaviour
         ResMgr.It.ReleaseHero(hero);
     }
 
-    
+    public void Damage(FighterHero atk, FighterHero def, int damage)
+    {
+        if (damage <= 0 || def.CurHP <= 0) return;
+        def.CurHP -= damage;
+        if (def.CurHP <= 0)
+        {
+            def.CurHP = 0;
+            OnHeroKill(atk, def);
+        }
+    }
+
+    public void Cure(FighterHero hero, int cure)
+    {
+        if (cure <= 0 || hero.CurHP <= 0 || hero.CurHP >= hero.MaxHP) return;
+        hero.CurHP += cure;
+    }
+
+    public void OnHeroKill(FighterHero atk, FighterHero def)
+    {
+
+    }
+
+    #endregion
+
 
     #region 输入控制
     public void OnJoystickMoveStart()
@@ -231,7 +254,7 @@ public class CombatMgr : MonoBehaviour
         int id = 1;
         if (m_MainHero.Weapon)
         {
-            id = m_MainHero.Weapon.id + 1;
+            id = m_MainHero.Weapon.ID + 1;
             if (id > ResMgr.It.GetWeaponCount())
             {
                 id = 1;
@@ -256,7 +279,7 @@ public class CombatMgr : MonoBehaviour
         Vector3 dst = m_MainHero.transform.position;
         Vector3 src = Camera.main.transform.position;
         dst.y = m_CameraHeight;
-        dst.z -= 1;
+        dst.z -= 2;
         Camera.main.transform.position = dst;
     }
     #endregion

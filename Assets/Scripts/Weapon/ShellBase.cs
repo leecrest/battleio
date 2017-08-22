@@ -13,9 +13,9 @@ public enum EnShellState
 
 public class ShellBase : MonoBehaviour {
     [HideInInspector]
-    public int id;
+    public int ID;
     [HideInInspector]
-    public int weaponid;
+    public int WeaponID;
     [HideInInspector]
     public WeaponBase Owner;
     [HideInInspector]
@@ -28,7 +28,7 @@ public class ShellBase : MonoBehaviour {
     private bool m_Check;
     private GameObject m_Target;
     private GameObject m_Hole;
-
+    private int m_Damage;
 
     // 子类属性
     protected ShellConfig m_Config;
@@ -54,7 +54,7 @@ public class ShellBase : MonoBehaviour {
     public virtual void OnInit()
     {
         m_Check = false;
-        m_Config = ResMgr.It.GetShellConfig(id);
+        m_Config = ResMgr.It.GetShellConfig(ID);
     }
 
     public virtual void OnUninit()
@@ -76,7 +76,7 @@ public class ShellBase : MonoBehaviour {
     }
 
     // 子弹发射
-    public virtual void Shoot(float speed, float distance, bool back)
+    public virtual void Shoot(float speed, float distance, int damage, bool back)
     {
         State = EnShellState.Flying;
         // 子弹脱离武器
@@ -86,6 +86,7 @@ public class ShellBase : MonoBehaviour {
         m_Speed = m_Config.speed + speed;
         m_Distance = m_Config.distance + distance;
         m_BeginPos = transform.position;
+        m_Damage = damage;
         // 开始飞行，启动碰撞检测
         m_Check = true;
     }
@@ -124,9 +125,9 @@ public class ShellBase : MonoBehaviour {
     // 子弹落在墙壁上
     void Drop2Wall()
     {
-        m_Hole = Instantiate(m_Config.hole);
-        m_Hole.transform.parent = transform;
-        OnWallHole(m_Hole.transform);
+        //m_Hole = Instantiate(m_Config.hole);
+        //m_Hole.transform.parent = transform;
+        //OnWallHole(m_Hole.transform);
     }
 
     // 子弹落在地面上
@@ -145,6 +146,7 @@ public class ShellBase : MonoBehaviour {
     void Drop2Hero()
     {
         transform.parent = m_Target.transform;
+        CombatMgr.It.Damage(Owner.Owner, m_Target.GetComponent<FighterHero>(), m_Damage);
     }
 
     // 子类继承，修改地面弹孔的数据
@@ -163,9 +165,15 @@ public class ShellBase : MonoBehaviour {
         if (!m_Check || State != EnShellState.Flying) return;
         if (collider.gameObject == Owner || collider.gameObject == Owner.Owner.gameObject) return;
         if (collider.tag == "shell") return;
-        Debug.Log(collider.ClosestPoint(transform.position));
         FlyEnd(collider.gameObject);
-        Debug.Log(collider.contactOffset);
+    }
+
+    void OnTriggerExit(Collider collider)
+    {
+        if (!m_Check || State != EnShellState.Flying) return;
+        if (collider.gameObject == Owner || collider.gameObject == Owner.Owner.gameObject) return;
+        if (collider.tag == "shell") return;
+        FlyEnd(collider.gameObject);
     }
 
     // 子弹被销毁

@@ -5,26 +5,35 @@ using UnityEngine;
 public class FighterHero : FighterBase
 {
     [HideInInspector]
+    public int ID;
+    [HideInInspector]
+    public string Name;
+
+    [HideInInspector]
     public bool IsMain = false;
     [HideInInspector]
     public bool IsAI = false;
+    [HideInInspector]
+    public bool IsMoving = false;
 
     public Vector2 BloodSize = new Vector2(150, 20);
     public Vector2 NameSize = new Vector2(200, 50);
-
-
-    private bool m_Moving = false;      // 是否移动中
-    private bool m_Fighting = false;    // 是否战斗中
-
+    [HideInInspector]
     public WeaponBase Weapon;
+    [HideInInspector]
     public int CurHP = 50;
+    [HideInInspector]
     public int MaxHP = 100;
-    public float MoveSpeed = 0.05f;
+    [HideInInspector]
+    public float MoveSpeed = 10f;
 
 
     // 武器加成
+    [HideInInspector]
     public int ShellCount = 0;
+    [HideInInspector]
     public float ShellSpeed = 0f;
+    [HideInInspector]
     public float ShellDistance = 0f;
 
     void OnGUI()
@@ -47,7 +56,7 @@ public class FighterHero : FighterBase
 
         //计算名称的宽高
         GUI.Label(new Rect(position.x - NameSize.x / 2, position.y - NameSize.y - BloodSize.y, NameSize.x, NameSize.y), 
-            name, ResMgr.It.MySkin.label);
+            Name, ResMgr.It.MySkin.label);
     }
 
     public override void OnInit()
@@ -63,16 +72,16 @@ public class FighterHero : FighterBase
 
     public void MoveStart()
     {
-        if (m_Moving) return;
-        m_Moving = true;
+        if (IsMoving) return;
+        IsMoving = true;
         //Animator anim = GetComponent<Animator>();
         //anim.Play("char_move");
     }
 
     public void MoveStop()
     {
-        if (!m_Moving) return;
-        m_Moving = false;
+        if (!IsMoving) return;
+        IsMoving = false;
         //Animator anim = GetComponent<Animator>();
         //anim.Play("char_idle");
     }
@@ -126,7 +135,7 @@ public class FighterHero : FighterBase
 
     void OnTimerAI()
     {
-        if (m_Moving)
+        if (IsMoving)
         {
             //if (Random.Range(1, 100) < 50)
             //{
@@ -155,7 +164,7 @@ public class FighterHero : FighterBase
         }
         if (Weapon)
         {
-            if (Weapon.id == id) return;
+            if (Weapon.ID == id) return;
             ResMgr.It.ReleaseWeapon(Weapon);
             Weapon = null;
         }

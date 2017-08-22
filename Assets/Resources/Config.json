@@ -20,5 +20,9 @@
 
 	"shell": [
 		{"id":1, "prefab":"Weapon/arrow_shell", "speed":10.0, "distance":5.0, "hole":"Weapon/arrowshell_hole"}
+	],
+	
+	"item": [
+		{"id":1, "prefab":"Item/exp"}
 	]
 }

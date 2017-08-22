@@ -58,6 +58,11 @@ public class ShellConfig
     public float distance;      // 基础飞行距离
 }
 
+public class ItemConfig
+{
+    public int id;
+    public GameObject prefab;
+}
 
 
 public class ResMgr : MonoBehaviour
@@ -88,6 +93,7 @@ public class ResMgr : MonoBehaviour
     private HeroConfig[] m_Hero;
     private WeaponConfig[] m_Weapon;
     private ShellConfig[] m_Shell;
+    private ItemConfig[] m_Item;
     #endregion
 
 
@@ -311,6 +317,20 @@ public class ResMgr : MonoBehaviour
             };
             m_Shell[shell.id - 1] = shell;
         }
+
+        // 道具
+        data = jsonD["item"];
+        m_Item = new ItemConfig[data.Count];
+        for (int i = 0; i < data.Count; i++)
+        {
+            item = data[i];
+            ItemConfig obj = new ItemConfig
+            {
+                id = (int)item["id"],
+                prefab = ResMgr.It.GetResource((string)item["prefab"], true) as GameObject,
+            };
+            m_Item[obj.id - 1] = obj;
+        }
     }
 
     void OnUninitConfig()
@@ -367,7 +387,7 @@ public class ResMgr : MonoBehaviour
         DestroyObject(scene);
     }
 
-    public FighterHero CreateHero(int fid, int id, float x, float z)
+    public FighterHero CreateHero(int id, float x, float z, int fid, string name, int hp, int maxhp)
     {
         HeroConfig cfg = m_Hero[id - 1];
         GameObject obj = Instantiate(cfg.prefab);
@@ -378,7 +398,11 @@ public class ResMgr : MonoBehaviour
         hero.transform.localScale = new Vector3(2, 2, 2);
         hero.gameObject.SetActive(true);
         hero.Fid = fid;
+        hero.ID = id;
+        hero.Name = name;
         hero.name = "hero_" + fid;
+        hero.CurHP = hp;
+        hero.MaxHP = maxhp;
         hero.OnInit();
         return hero;
     }
@@ -396,7 +420,7 @@ public class ResMgr : MonoBehaviour
         GameObject obj = Instantiate(cfg.prefab);
         WeaponBase weapon = obj.GetComponent<WeaponBase>();
         weapon.gameObject.SetActive(true);
-        weapon.id = id;
+        weapon.ID = id;
         weapon.name = "weapon_" + id;
         weapon.OnInit();
         return weapon;
@@ -421,8 +445,8 @@ public class ResMgr : MonoBehaviour
         shell.transform.parent = parent;
         shell.transform.localPosition = Vector3.zero;
         shell.transform.localRotation = Quaternion.identity;
-        shell.id = cfg.id;
-        shell.weaponid = weaponid;
+        shell.ID = cfg.id;
+        shell.WeaponID = weaponid;
         shell.name = "shell_" + cfg.id;
         shell.OnInit();
         return shell;
@@ -434,6 +458,29 @@ public class ResMgr : MonoBehaviour
         shell.gameObject.SetActive(false);
         shell.OnUninit();
         DestroyObject(shell.gameObject);
+    }
+
+    public ItemBase CreateItem(int id, float x, float z, Transform parent = null)
+    {
+        ItemConfig cfg = m_Item[id - 1];
+        GameObject obj = Instantiate(cfg.prefab);
+        ItemBase item = obj.GetComponent<ItemBase>();
+        item.gameObject.SetActive(true);
+        if (parent == null) parent = CombatMgr.It.ObjRoot;
+        item.transform.parent = parent;
+        item.transform.localPosition = new Vector3(x, 1.5f, z);
+        item.transform.localRotation = Quaternion.identity;
+        item.ID = cfg.id;
+        item.name = "item_" + cfg.id;
+        item.OnInit();
+        return item;
+    }
+
+    public void ReleaseItem(ItemBase item)
+    {
+        item.gameObject.SetActive(false);
+        item.OnUninit();
+        DestroyObject(item.gameObject);
     }
 
     #endregion
