@@ -4,13 +4,6 @@ using UnityEngine;
 
 public class Daliandao : WeaponBase
 {
-
-    void Start()
-    {
-        Name = "daliandao";
-        HasShell = false;
-    }
-
     public override void OnAttach(FighterHero hero)
     {
         base.OnAttach(hero);

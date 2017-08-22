@@ -2,6 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// 战斗状态
+public enum EnCombatState
+{
+    Ready = 0,
+    Start,
+    Over,
+}
+
 public class CombatMgr : MonoBehaviour
 {
     public static CombatMgr It;
@@ -14,6 +22,8 @@ public class CombatMgr : MonoBehaviour
     public Transform ObjRoot;
     public ETCJoystick m_Joystick;
 
+    private float m_CameraSpeed;
+    private float m_CameraHeight;
     private bool m_Moving;
     private int m_SceneID;
     private int m_LastSceneID;
@@ -31,6 +41,8 @@ public class CombatMgr : MonoBehaviour
         m_LastSceneID = -1;
         m_SceneObj = null;
         m_Heros = new Dictionary<int, FighterHero>();
+        m_CameraSpeed = (float)ResMgr.It.GetConst("CAMERA_SPEED");
+        m_CameraHeight = (float)ResMgr.It.GetConst("CAMERA_HEIGHT");
     }
 
     public void OnUninit()
@@ -68,6 +80,11 @@ public class CombatMgr : MonoBehaviour
                 OnJoystickMoveStart();
             }
         }
+
+        if (m_MainHero && Input.GetKey(KeyCode.Space))
+        {
+            OnHeroShoot();
+        }
 #endif
     }
 	
@@ -88,7 +105,7 @@ public class CombatMgr : MonoBehaviour
     {
         if (State == EnCombatState.Start) return;
         State = EnCombatState.Start;
-        m_SceneID = 0;
+        m_SceneID = 1;
         // 检查是否要销毁原场景
         if (m_SceneObj != null && m_LastSceneID != m_SceneID)
         {
@@ -137,7 +154,7 @@ public class CombatMgr : MonoBehaviour
     public FighterHero AddHero(bool isMain, int fid, int id, float x, float z)
     {
         if (fid <= 0) fid = NewFid();
-        FighterHero hero = ResMgr.It.NewHero(fid, id, x, z);
+        FighterHero hero = ResMgr.It.CreateHero(fid, id, x, z);
         hero.IsMain = isMain;
         m_Heros.Add(fid, hero);
         if (isMain)
@@ -175,7 +192,7 @@ public class CombatMgr : MonoBehaviour
         {
             Transform tf = Camera.main.transform;
             Vector3 pos = tf.position;
-            float speed = CONST.CAMERA_SPEED;
+            float speed = m_CameraSpeed;
             if (Mathf.Approximately(vec.x, 0f))
             {
                 if (Mathf.Approximately(vec.y, 0f)) return;
@@ -211,13 +228,13 @@ public class CombatMgr : MonoBehaviour
     public void GM_ChangeWeapon()
     {
         if (m_MainHero == null) return;
-        int id = 0;
+        int id = 1;
         if (m_MainHero.Weapon)
         {
-            id = m_MainHero.Weapon.ID + 1;
-            if (id > ResMgr.It.m_WeaponPrefabs.Length - 1)
+            id = m_MainHero.Weapon.id + 1;
+            if (id > ResMgr.It.GetWeaponCount())
             {
-                id = 0;
+                id = 1;
             }
         }
         m_MainHero.ChangeWeapon(id);
@@ -228,7 +245,7 @@ public class CombatMgr : MonoBehaviour
     #region 镜头控制
     protected void CameraReset()
     {
-        Camera.main.transform.position = new Vector3(0, CONST.CAMERA_Z, 0);
+        Camera.main.transform.position = new Vector3(0, m_CameraHeight, 0);
         //Camera.main.transform.rotation = Quaternion.identity;
         //Camera.main.transform.Rotate(Vector3.right, 80);
     }
@@ -238,7 +255,7 @@ public class CombatMgr : MonoBehaviour
         if (m_MainHero == null) return;
         Vector3 dst = m_MainHero.transform.position;
         Vector3 src = Camera.main.transform.position;
-        dst.y = CONST.CAMERA_Z;
+        dst.y = m_CameraHeight;
         dst.z -= 1;
         Camera.main.transform.position = dst;
     }

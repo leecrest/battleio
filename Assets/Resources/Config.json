@@ -1,0 +1,24 @@
+{
+	"const": [
+		{"name":"CAMERA_HEIGHT", "desc":"镜头距离地面高度", "value":8.0 },
+		{"name":"CAMERA_SPEED", "desc":"观察时，镜头的移动速度", "value":0.15},
+		{"name":"SHELL_DESTROY", "desc":"子弹的销毁时间，单位：秒", "value":1.0}
+	],
+
+	"map": [
+		{"id":1, "name":"测试地图", "width":10, "height":10, "prefab":"Map/map01"}
+	],
+
+	"hero": [
+		{"id":1, "name":"测试模型", "prefab":"Hero/hero01"}
+
+	],
+
+	"weapon": [
+		{"id":1, "name":"弓箭", "prefab":"Weapon/arrow", "shell":1, "atktime":0.5}
+	],
+
+	"shell": [
+		{"id":1, "prefab":"Weapon/arrow_shell", "speed":10.0, "distance":5.0, "hole":"Weapon/arrowshell_hole"}
+	]
+}

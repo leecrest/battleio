@@ -3,49 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public enum EnWeaponType
-{
-    Arrow = 1,      // 弓箭
-    Blade,          // 刀
-
-}
-
-
-
-
 public class WeaponBase : MonoBehaviour {
-    public int ID = 0;
-    public string Name = "";
+    public int id = 0;
     public FighterHero Owner = null;
-    public bool HasShell = false;
-
-    // 子弹资源
-    public ShellBase ShellPrefab;
-    // 子弹数量
-    public int ShellCount = 0;
-    // 子弹回弹
-    public bool ShellBack = false;
-    // 攻击前摇
-    public float TimeAttack = 0f;
-    // 子弹飞行的基础速度
-    public float ShellSpeed = 1f;
-    // 子弹的飞行距离，0表示无限制
-    public float ShellDistance = 10f;
-
 
     // 是否处于发射状态
     [HideInInspector]
     public bool IsShooting = false;
+    [HideInInspector]
+    public bool HasShell = false;
+
+    protected WeaponConfig m_Config;
     protected List<ShellBase> m_Shells;
 
     public virtual void OnInit()
     {
+        m_Config = ResMgr.It.GetWeaponConfig(id);
+        HasShell = m_Config.shell > 0;
         if (HasShell) m_Shells = new List<ShellBase>();
     }
 
     public virtual void OnUninit()
     {
-
+        if (HasShell) m_Shells.Clear();
     }
 
     // 绑定到玩家身上
@@ -63,21 +43,23 @@ public class WeaponBase : MonoBehaviour {
         transform.parent = null;
     }
 
+    public int GetShellMax()
+    {
+        if (Owner) return Owner.ShellCount + 1;
+        else return 1;
+    }
+
     // 装弹
     public virtual void LoadShell()
     {
         // 播放人物的装弹动画
 
         // 加载子弹
-        int i = m_Shells.Count;
         ShellBase obj;
-        for (; i < ShellCount; i++)
+        int max = Owner.ShellCount + 1;
+        for (int i = m_Shells.Count; i < max; i++)
         {
-            obj = Instantiate(ShellPrefab);
-            obj.transform.parent = transform;
-            obj.transform.localPosition = Vector3.zero;
-            obj.transform.localRotation = Quaternion.identity;
-            obj.OnInit();
+            obj = ResMgr.It.CreateShell(id, transform);
             obj.OnAttach(this);
             m_Shells.Add(obj);
         }
@@ -92,13 +74,13 @@ public class WeaponBase : MonoBehaviour {
         // 播放武器的攻击动画
 
         // 执行子弹行为
-        if (HasShell && ShellCount > 0)
+        if (HasShell)
         {
             ShootShell();
         }
-        if (TimeAttack > 0)
+        if (m_Config.atktime > 0)
         {
-            Invoke("ShootEnd", TimeAttack);
+            Invoke("ShootEnd", m_Config.atktime);
         }
         else
         {
@@ -110,21 +92,17 @@ public class WeaponBase : MonoBehaviour {
     public void ShootEnd()
     {
         IsShooting = false;
-        if (HasShell && m_Shells.Count < ShellCount && !ShellBack) LoadShell();
+        if (HasShell && m_Shells.Count < Owner.ShellCount+1) LoadShell();
     }
 
     // 子弹发射
     public virtual void ShootShell()
     {
         ShellBase shell;
-        float speed;
-        float distance;
         for (int i = 0; i < m_Shells.Count; i++)
         {
             shell = m_Shells[i];
-            speed = ShellSpeed + Owner.WeaponShellSpeed;
-            distance = ShellDistance + Owner.WeaponShellDistance;
-            shell.Shoot(speed, distance, ShellBack);
+            shell.Shoot(Owner.ShellSpeed, Owner.ShellDistance, false);
         }
         m_Shells.Clear();
     }

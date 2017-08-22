@@ -13,18 +13,25 @@ public enum EnShellState
 
 public class ShellBase : MonoBehaviour {
     [HideInInspector]
+    public int id;
+    [HideInInspector]
+    public int weaponid;
+    [HideInInspector]
     public WeaponBase Owner;
     [HideInInspector]
     public EnShellState State;
 
-    private Vector3 m_Dir;
     private float m_Speed;
     private float m_Distance;
+    private Vector3 m_Dir;
     private Vector3 m_BeginPos;
     private bool m_Check;
     private GameObject m_Target;
+    private GameObject m_Hole;
+
 
     // 子类属性
+    protected ShellConfig m_Config;
     protected float m_DropPosY;       // 掉落坐标点的Y偏移
     protected float m_DropAngleX;     // 掉落角度的x
 
@@ -47,6 +54,7 @@ public class ShellBase : MonoBehaviour {
     public virtual void OnInit()
     {
         m_Check = false;
+        m_Config = ResMgr.It.GetShellConfig(id);
     }
 
     public virtual void OnUninit()
@@ -75,8 +83,8 @@ public class ShellBase : MonoBehaviour {
         transform.parent = CombatMgr.It.ObjRoot;
         m_Dir = transform.position - Owner.Owner.transform.position;
         m_Dir = m_Dir.normalized;
-        m_Speed = speed;
-        m_Distance = distance;
+        m_Speed = m_Config.speed + speed;
+        m_Distance = m_Config.distance + distance;
         m_BeginPos = transform.position;
         // 开始飞行，启动碰撞检测
         m_Check = true;
@@ -90,32 +98,64 @@ public class ShellBase : MonoBehaviour {
         if (m_Target == null)
         {
             // 飞行超时，落在地面上
-            Vector3 pos = transform.localPosition;
-            pos.y = m_DropPosY;
-            transform.localPosition = pos;
-            //Quaternion q = transform.rotation;
-            //transform.rotation = Quaternion.Euler(m_DropAngleX, q.y, q.z);
-            transform.Rotate(Vector3.right, m_DropAngleX);
+            Drop2Ground();
         }
         else
         {
             switch (m_Target.tag)
             {
                 case "wall":
-
+                    Drop2Wall();
                     break;
                 case "ground":
-
+                    Drop2Ground();
                     break;
                 case "hero":
-
+                    Drop2Hero();
                     break;
                 default:
                     break;
             }
             
         }
-        //DestroyObject(gameObject, CONST.SHELL_DESTROY);
+        Invoke("OnTimerDestroy", (float)ResMgr.It.GetConst("SHELL_DESTROY"));
+    }
+
+    // 子弹落在墙壁上
+    void Drop2Wall()
+    {
+        m_Hole = Instantiate(m_Config.hole);
+        m_Hole.transform.parent = transform;
+        OnWallHole(m_Hole.transform);
+    }
+
+    // 子弹落在地面上
+    void Drop2Ground()
+    {
+        Vector3 pos = transform.localPosition;
+        pos.y = m_DropPosY;
+        transform.localPosition = pos;
+        transform.Rotate(Vector3.right, m_DropAngleX);
+        m_Hole = Instantiate(m_Config.hole);
+        m_Hole.transform.parent = transform;
+        OnGroundHole(m_Hole.transform);
+    }
+
+    // 子弹落在玩家身上
+    void Drop2Hero()
+    {
+        transform.parent = m_Target.transform;
+    }
+
+    // 子类继承，修改地面弹孔的数据
+    protected virtual void OnGroundHole(Transform hole)
+    {
+
+    }
+
+    protected virtual void OnWallHole(Transform hole)
+    {
+
     }
 
     void OnTriggerEnter(Collider collider)
@@ -123,7 +163,15 @@ public class ShellBase : MonoBehaviour {
         if (!m_Check || State != EnShellState.Flying) return;
         if (collider.gameObject == Owner || collider.gameObject == Owner.Owner.gameObject) return;
         if (collider.tag == "shell") return;
+        Debug.Log(collider.ClosestPoint(transform.position));
         FlyEnd(collider.gameObject);
-        Debug.Log(name + "->" + collider.name);
+        Debug.Log(collider.contactOffset);
+    }
+
+    // 子弹被销毁
+    private void OnTimerDestroy()
+    {
+        if (m_Hole != null) DestroyObject(m_Hole);
+        DestroyObject(gameObject);
     }
 }

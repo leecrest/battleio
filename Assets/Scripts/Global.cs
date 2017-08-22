@@ -8,15 +8,6 @@ public class Global : MonoBehaviour {
     void Awake() { It = this; }
 
 
-    #region 常量
-    public GUISkin MySkin;
-    public Texture2D TexBloodSelf;
-    public Texture2D TexBloodFriend;    // 友方血条前景
-    public Texture2D TexBloodEnemy;     // 敌方血条前景
-    public Texture2D TexBloodBg;        // 血条背景
-    #endregion
-
-
 
 
     void Start()

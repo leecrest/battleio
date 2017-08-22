@@ -23,8 +23,9 @@ public class FighterHero : FighterBase
 
 
     // 武器加成
-    public float WeaponShellSpeed = 0f;
-    public float WeaponShellDistance = 0f;
+    public int ShellCount = 0;
+    public float ShellSpeed = 0f;
+    public float ShellDistance = 0f;
 
     void OnGUI()
     {
@@ -39,14 +40,14 @@ public class FighterHero : FighterBase
         float blood_width = BloodSize.x * CurHP / MaxHP;
         //先绘制黑色血条
         GUI.DrawTexture(new Rect(position.x - BloodSize.x / 2, position.y - BloodSize.y, BloodSize.x, BloodSize.y),
-            Global.It.TexBloodBg);
+            ResMgr.It.TexBloodBg);
         //在绘制红色血条
         GUI.DrawTexture(new Rect(position.x - BloodSize.x / 2, position.y - BloodSize.y, blood_width, BloodSize.y),
-            IsMain ? Global.It.TexBloodSelf : Global.It.TexBloodFriend);
+            IsMain ? ResMgr.It.TexBloodSelf : ResMgr.It.TexBloodFriend);
 
         //计算名称的宽高
         GUI.Label(new Rect(position.x - NameSize.x / 2, position.y - NameSize.y - BloodSize.y, NameSize.x, NameSize.y), 
-            name, Global.It.MySkin.label);
+            name, ResMgr.It.MySkin.label);
     }
 
     public override void OnInit()
@@ -79,7 +80,7 @@ public class FighterHero : FighterBase
     public void MoveBy(float x, float z)
     {
         float angle = Vector2.SignedAngle(Vector2.down, new Vector2(x, z));
-        angle += CONST.CHAR_FACE_OFFSET;
+        angle += 90f;
         transform.rotation = Quaternion.AngleAxis(angle, Vector2.down);
         Vector3 pos = transform.position;
         if (Mathf.Approximately(x, 0f))
@@ -104,8 +105,7 @@ public class FighterHero : FighterBase
     public void FaceTo(float x, float z)
     {
         float angle = Vector2.SignedAngle(Vector2.up, new Vector2(x, z));
-        angle += CONST.CHAR_FACE_OFFSET;
-        if (IsMain) Debug.Log(angle);
+        angle += 90f;
         transform.rotation = Quaternion.AngleAxis(angle, Vector2.up);
     }
 
@@ -149,13 +149,17 @@ public class FighterHero : FighterBase
     #region 武器
     public void ChangeWeapon(int id)
     {
+        if (id < 0)
+        {
+            id = Random.Range(1, ResMgr.It.GetWeaponCount());
+        }
         if (Weapon)
         {
-            if (Weapon.ID == id) return;
+            if (Weapon.id == id) return;
             ResMgr.It.ReleaseWeapon(Weapon);
             Weapon = null;
         }
-        Weapon = ResMgr.It.NewWeapon(id);
+        Weapon = ResMgr.It.CreateWeapon(id);
         Weapon.OnAttach(this);
     }
 
@@ -168,6 +172,10 @@ public class FighterHero : FighterBase
         // 执行武器的射击逻辑
         Weapon.ShootBegin();
     }
+
+    #endregion
+
+    #region 数值加成
 
     #endregion
 }

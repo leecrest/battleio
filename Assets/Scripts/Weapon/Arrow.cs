@@ -4,16 +4,6 @@ using UnityEngine;
 
 public class Arrow : WeaponBase
 {
-    void Start()
-    {
-        Name = "arrow";
-        HasShell = true;
-        ShellBack = false;
-        ShellCount = 1;
-        ShellSpeed = 10f;
-        ShellDistance = 5f;
-    }
-
     public override void OnAttach(FighterHero hero)
     {
         base.OnAttach(hero);
@@ -28,9 +18,10 @@ public class Arrow : WeaponBase
         base.LoadShell();
         ShellBase obj;
         // 重新计算箭头的位置
-        float angle = 90f / (ShellCount+1);
+        int max = GetShellMax();
+        float angle = 90f / (max + 1);
         float start = 45f + angle;
-        for (int i = 0; i < ShellCount; i++)
+        for (int i = 0; i < max; i++)
         {
             obj = m_Shells[i];
             obj.transform.localPosition = new Vector3(-0.1f, 0, 0);
