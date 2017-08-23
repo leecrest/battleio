@@ -1,0 +1,67 @@
+字段含义	ID	原描述	技能名	技能描述	tips	资源路径	资源路径
+字段说明	Id	原描述	技能描述	技能屏蔽组	tips	资源路径	资源路径
+字段列名	id	skill_content	skill_des	skill_list	skill_tips	path	备注
+字段类型	int	string	string	string	string	string	string
+	1	正向弹幕加1	Flecha frente +1	Mais uma flecha atirada para frente com arco além das outras.		Arrow_Forward	Arrow_Forward
+	2	反向子弹数量+1	Flecha trás +1	Mais uma flecha atirada para trás com arco além das outras.		Arrow_Backward	Arrow_Backward
+	3	连射数量+1	Atiro repetente +1	O ferimento causado pela arma torna-se cada vez menos sempre que se atira uma flecha.		Arrow_Continue	Arrow_Continue
+	4	子弹向上加1	Flecha de dois lados +2	Mais uma flecha atirada para os dois lados com arco além das outras.		Arrow_Up	Arrow_Up
+	5	子弹变为距离短的激光炮	Laser	Torna-se uma arma que possa emitir raio laser.	A ideia de arma laser é chata, mesmo assim, é bem legal com ela quando numa batalha.	Change_LaserCannon	Change_LaserCannon
+	6	子弹变为速度很慢但会跟踪一段距离的导弹	Flecha guiada	As flechas atiradas desta arma podem rastejar os inimigos.	Notícias boas para os novatos.	Change_Track	Change_Track
+	7	发射一道尖刺，伤害降低，但该刺存在一段时间，只要接触就会持续受到伤害	Espreitador	Torna-se numa arma que possa lançar espreitador.	Vai ficar viciado por esta habilidade.	Change_Radial	Change_Radial
+	8	子弹变为狙击，瞄准时不能移动，但射速大提升，射击距离大提升，装填速度变慢	Atirar de tocaia	As flechas atiradas a partir desta arma voam rápida e longe, mas quando fitar a vista em alguma coisa, não pode-se mover.	Só precisa mirar os joelhos.	Change_Sniper	Change_Sniper
+	9	子弹变为发出再返回的回旋镖，但收回后才能再次发射	Enrolar para dentro	A flecha depois de ser atirada vai retornar pela forma que ela foi.	A ciência e tecnologia de reciclagem aprendida com space X.	Change_Boomerang	Change_Boomerang
+	10	子弹会碰到障碍物反弹次数+1，每次反弹后射程变为原射程一半	Elasticidade	A flecha atirada pelo jogador pode saltar de volta quando se encontrar uma parede.	ping！pang！	Special_ReboundWall	Special_ReboundWall
+	11	子弹会穿过障碍物	Atravessa paredes	A flecha atirada pode atravessar as paredes.	Mano bacana! Show de bola!	Special_ArrowThrough	Special_ArrowThrough
+	12	静止不动时隐身	Anel de levitação	O jogador pode se tornar invisível quando ficar parado.	Um anel estranho recebido com um Hobbit (anão) gordinho	Special_StaticStealth	Special_StaticStealth
+	13	吃到回血道具回血双倍	Coração saudável	Cada vez pode recuperar maior quantidade dos pontos de saúde.		Special_HPDouble	Special_HPDouble
+	14	获得经验点经验x1.5倍	Mais experiências	As experiências ofertas pelas estrelas aumentaram.		Special_ExpUp	Special_ExpUp
+	15	血量越少时攻击力越高	Raiva	Quando menos sejam os pontos de saúde, mais forte seja o ataque.	Posso fazer um contra-ataque!	Special_HPLessHitAdd	Special_HPLessHitAdd
+	16	攻击有几率打出暴击伤害	Ataque critical	Tem possibilidade de aparecimento de ataques críticas quando realizar ataques contra outros.	Boa sorte!	Special_Crit	Special_Crit
+	17	可以移动越过障碍物，但移速变慢	Com barreiras	As personagens podem se mover e atravessar diretamente as paredes.		Special_ThroughSlow	Special_ThroughSlow
+	18	静止不动时，防御力提高	Escudo levantado	Quando ficar parado, vai receber ferimento bem reduzido.		Special_StaticDefenceUp	Special_StaticDefenceUp
+	19	攻击会一定比例吸血	Arma vampírica	O ferimento causado pelo ataque também contribui para recuperar uma determinada quantidade dos pontos de saúde.		Special_Vampire	Special_Vampire
+	20	反弹一定百分比的伤害	Vingança	O seu inimigo irá receber ferimento de vingança.	Só precisa vestir uma armadura cheia de espinhos!	Special_ReboundHit	Special_ReboundHit
+	21	攻击提升	Ataque subiu	A força de ataque aumentou.		Ability_AddHit	Ability_AddHit
+	22	血量提升	HP adição	O valor máximo dos pontos de saúde aumentou.	Mais forte	Ability_AddMaxHp	Ability_AddMaxHp
+	23	射程提升	Alcance adição	O alcance de tiro aumentou.	Mais distante	Ability_AddDistance	Ability_AddDistance
+	24	获得一个围绕在身边的小护盾，可当掉子弹。	Escudo rotativo	Consegue receber um escudo pequeno ao redor que possa proteger o jogador do ataque de balas	As vezes pode salvar o jogador do perigo!	Get_Shield	Get_Shield
+	25	获得一个围绕在身边的忍者镖，和敌人接触会伤害敌方	Dardo rotativo	Consegue receber um dardo Ninja ao redor que possa causar ferimentos aos inimigos.		Get_Bodyguard	Get_Bodyguard
+	26	火球	Bola de fogo	Torna-se numa arma que possa lançar bolas de fogo.	Quase me tornei um bruxo em vestido branco.	Change_FireBall	Change_FireBall
+	27	榔头	O martelo	Torna-se numa arma que possa atirar martelo.	Pode fazer cosplay de um ceifeiro.	Change_Sickle	Change_Sickle
+	28	忍者镖	Dardo Ninja	Torna-se numa arma que possa atirar dardos Ninja.	Eu sou Ninja!	Change_Shuriken	Change_Shuriken
+	29	哑铃	Martelo adição	Torna-se numa arma que possa atirar martelos.	Parece que é um haltere.	Change_Dumbbell	Change_Dumbbell
+	30	移动速度提升	Velocidade 	Aumentou-se a velocidade de movimento.	Mais rápido	Ability_Speed	Ability_Speed
+	31	和自己射箭方向相同的小跟班	Robinho	Os mirmidões que andam no mesmo sentido com a flecha atirada pelo próprio jogador.	Meus grandes fãs!	Baby_directionsame	Baby_directionsame
+	32	每隔一段时间发射一发小跟踪箭的跟班	Fantasma pequena ?	Os mirmidões que atiram umas flechas guiadas de vez em quando.		Baby_track	Baby_track
+	33	每隔一段时间往两个斜向发射火焰的跟班	Feiticeirinho	Os mirmidões que atiram chamas para ambos os lados de vez em quando.		Baby_oblique	Baby_oblique
+	34	每隔一段时间发射一发忍者镖的跟班	Hazozinho	Os mirmidões que atiram umas dardos Ninja de vez em quando.		Baby_shuriken	Baby_shuriken
+	35	和自己射箭方向相同的发激光的小跟班	Caolhozinho	Os mirmidões que lançam raio laser no mesmo sentido da flecha atirado pelo jogador próprio.		Baby_lasercannon	Baby_lasercannon
+	36	向周围隔一段时间发射镰刀的小跟班	Pudgezinho	Os mirmidões que atiram foices ao redor de vez em quando.		Baby_sickle	Baby_sickle
+	37	往射箭的方向冲刺一段距离，再返回的跟班	Chabozinho	Os mirmidões que correm a toda velocidade para direção do ataque e depois voltam.		Pet_BoomerangBaby	Pet_BoomerangBaby
+	38	圆形炸弹	Homem-bomba	Torna-se numa arma que possa lançar bombas.		Change_BombCircle	Change_BombCircle
+	39	机枪	Metralhadora	Atirar flechas de forma rápida e contínua para direção de ataque.	Já posso me candidatar para o governador!	Barrage_Gatlin	Barrage_Gatlin
+	40	小曲线	Curvilínea	As flechas atiradas vão seguir para a frente ao longo de uma trajetória curvilínea 	Está ressacado(a), não dá para andar em linha reta.	Trajectory_CurveSmall	Trajectory_CurveSmall
+	41	折线	Linha quebrada	As flechas atiradas vão seguir para a frente ao longo de uma trajetória de linha quebrada 	Ziguezague!	Trajectory_Fold	Trajectory_Fold
+	42	周身旋转	Planetinha	As flechas atiradas vão fazer rotação ao redor do corpo do jogador.		Trajectory_Around	Trajectory_Around
+	43	子弹由大变小	Crescente	As flechas atiradas vão tornar-se pequenas.		Scale_Big2Small	Scale_Big2Small
+	44	子弹由小变大	Contraível	As flechas atiradas vão tornar-se das gigantes para as pequeninas.		Scale_Small2Big	Scale_Small2Big
+	45	移速增加，但是无法停止移动	Chita	Aumentou-se a velocidade de movimento, porém não tem jeito para parar se mover.	Nem posso parar!	Special_ADHD	Special_ADHD
+	46	尖刺随身	Espinhos portáteis	Os espinhos ficarão crescidos na terra onde o jogador tem caminhado.	Polvilha com pregos de forma escondida ao longo do caminho.	Special_Nail	Special_Nail
+	47	轻装上阵	Animado	Aumentou-se a velocidade de movimento, porem o ferimento se tornará um pouco maior.	Posso correr tão rápido como o vento sopra.	Special_NoBurden	Special_NoBurden
+	48	可以飞跃空地	Levitação	O jogador pode passar um espaço de modo de levitar no ar.	Com isso não pode passar o espaço aberto, mas também não precisa sujar os sapatos	Special_ThroughBlankG	Special_ThroughBlankG
+	49	磁铁	Ímã	Pode atrair as estrelas e corações ao redor do jogador.	Talvez as estrelas e corações estejam feitos de ferro.	Special_Magnet	Special_Magnet
+	50	每隔一段时间发射一个炸弹的跟班	Ivazinho	Os mirmidões que lançam uma bomba de vez em quando.		Pet_BombCircle	Pet_BombCircle
+	51	十字架	Crucifixo	Torna-se num Crucifixo.		Change_Cross	Change_Cross
+	52	鹰眼	Olho de águia	Mais alto você fica, mais longe vê.	Foi ensinado por uma organização de assassinos estabelecida na idade média.	Special_Hawkeye	Special_Hawkeye
+	53	瞄准镜更换	Mira telescópica 	Substitui-se por uma mira telescópica mais avançada.	Graças ao desenvolvimento da ciência e tecnologia.	Sight_Glass	Sight_Glass
+	54	长剑	Espada	Usar a espada para a batalha.	Isto gostar Bola de fogo,Foice e Laser.	Change_Sword	Change_Sword
+	55	子弹变大	Contraível	As flechas atiradas vão tornar-se das gigantes para as pequeninas.			
+	56	防御提升	Defesa	Atualização defesa！			
+	57	创可贴	Curativo	Recuperação lenta do sangue.			
+	58	满血升级	Corpo saudável	Nível de HP cheio acima.			
+	59	魔法蘑菇	Cogumelos mágicos	Todos status acima.			
+	60	缩小蘑菇	Cogumelos estreitas	Torná-lo menor.			
+	61	光剑	Lightsaber	Apenas use isso!			
+	62	镰刀	Foice	Apenas use isso!			
+	63	十字炸弹	Bomba cruzada	Apenas use isso!			

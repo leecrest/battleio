@@ -18,7 +18,7 @@ public class WeaponBase : MonoBehaviour {
 
     public virtual void OnInit()
     {
-        m_Config = ResMgr.It.GetWeaponConfig(ID);
+        m_Config = Config.WeaponCfg[ID - 1];
         HasShell = m_Config.shell > 0;
         if (HasShell) m_Shells = new List<ShellBase>();
     }
@@ -102,7 +102,7 @@ public class WeaponBase : MonoBehaviour {
         for (int i = 0; i < m_Shells.Count; i++)
         {
             shell = m_Shells[i];
-            shell.Shoot(Owner.ShellSpeed, Owner.ShellDistance, 10, false);
+            shell.Shoot(Owner.ShellSpeed, Owner.ShellRange, Owner.Damage, false);
         }
         m_Shells.Clear();
     }

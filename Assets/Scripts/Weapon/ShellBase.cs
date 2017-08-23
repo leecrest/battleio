@@ -21,8 +21,10 @@ public class ShellBase : MonoBehaviour {
     [HideInInspector]
     public EnShellState State;
 
+    public GameObject Hole { get { return m_Hole; } }
+
     private float m_Speed;
-    private float m_Distance;
+    private float m_Range;
     private Vector3 m_Dir;
     private Vector3 m_BeginPos;
     private bool m_Check;
@@ -31,7 +33,6 @@ public class ShellBase : MonoBehaviour {
     private int m_Damage;
 
     // 子类属性
-    protected ShellConfig m_Config;
     protected float m_DropPosY;       // 掉落坐标点的Y偏移
     protected float m_DropAngleX;     // 掉落角度的x
 
@@ -45,7 +46,7 @@ public class ShellBase : MonoBehaviour {
         pos.x += m_Dir.x * delta;
         pos.z += m_Dir.z * delta;
         transform.localPosition = pos;
-        if (m_Distance > 0 && Vector3.Distance(m_BeginPos, transform.position) >= m_Distance)
+        if (m_Range > 0 && Vector3.Distance(m_BeginPos, transform.position) >= m_Range)
         {
             FlyEnd(null);
         }
@@ -54,7 +55,6 @@ public class ShellBase : MonoBehaviour {
     public virtual void OnInit()
     {
         m_Check = false;
-        m_Config = ResMgr.It.GetShellConfig(ID);
     }
 
     public virtual void OnUninit()
@@ -76,15 +76,16 @@ public class ShellBase : MonoBehaviour {
     }
 
     // 子弹发射
-    public virtual void Shoot(float speed, float distance, int damage, bool back)
+    public virtual void Shoot(float speed, float range, int damage, bool back)
     {
         State = EnShellState.Flying;
         // 子弹脱离武器
         transform.parent = CombatMgr.It.ObjRoot;
         m_Dir = transform.position - Owner.Owner.transform.position;
         m_Dir = m_Dir.normalized;
-        m_Speed = m_Config.speed + speed;
-        m_Distance = m_Config.distance + distance;
+        ShellConfig cfg = Config.ShellCfg[ID-1];
+        m_Speed = cfg.speed + speed;
+        m_Range = cfg.range + range;
         m_BeginPos = transform.position;
         m_Damage = damage;
         // 开始飞行，启动碰撞检测
@@ -119,7 +120,7 @@ public class ShellBase : MonoBehaviour {
             }
             
         }
-        Invoke("OnTimerDestroy", (float)ResMgr.It.GetConst("SHELL_DESTROY"));
+        Invoke("OnTimerDestroy", Config.SHELL_DESTROY);
     }
 
     // 子弹落在墙壁上
@@ -137,7 +138,7 @@ public class ShellBase : MonoBehaviour {
         pos.y = m_DropPosY;
         transform.localPosition = pos;
         transform.Rotate(Vector3.right, m_DropAngleX);
-        m_Hole = Instantiate(m_Config.hole);
+        m_Hole = ResMgr.It.CreateShellHole(ID);
         m_Hole.transform.parent = transform;
         OnGroundHole(m_Hole.transform);
     }
@@ -179,7 +180,6 @@ public class ShellBase : MonoBehaviour {
     // 子弹被销毁
     private void OnTimerDestroy()
     {
-        if (m_Hole != null) DestroyObject(m_Hole);
-        DestroyObject(gameObject);
+        ResMgr.It.ReleaseShell(this);
     }
 }

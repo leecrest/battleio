@@ -22,8 +22,6 @@ public class CombatMgr : MonoBehaviour
     public Transform ObjRoot;
     public ETCJoystick m_Joystick;
 
-    private float m_CameraSpeed;
-    private float m_CameraHeight;
     private bool m_Moving;
     private int m_SceneID;
     private int m_LastSceneID;
@@ -41,8 +39,6 @@ public class CombatMgr : MonoBehaviour
         m_LastSceneID = -1;
         m_SceneObj = null;
         m_Heros = new Dictionary<int, FighterHero>();
-        m_CameraSpeed = (float)ResMgr.It.GetConst("CAMERA_SPEED");
-        m_CameraHeight = (float)ResMgr.It.GetConst("CAMERA_HEIGHT");
     }
 
     public void OnUninit()
@@ -176,10 +172,11 @@ public class CombatMgr : MonoBehaviour
     public void Damage(FighterHero atk, FighterHero def, int damage)
     {
         if (damage <= 0 || def.CurHP <= 0) return;
-        def.CurHP -= damage;
+        // 伤害公式
+        
+        def.OnDamage(damage);
         if (def.CurHP <= 0)
         {
-            def.CurHP = 0;
             OnHeroKill(atk, def);
         }
     }
@@ -187,10 +184,22 @@ public class CombatMgr : MonoBehaviour
     public void Cure(FighterHero hero, int cure)
     {
         if (cure <= 0 || hero.CurHP <= 0 || hero.CurHP >= hero.MaxHP) return;
-        hero.CurHP += cure;
+        hero.OnCure(cure);
     }
 
+    // 玩家atk击杀了def
     public void OnHeroKill(FighterHero atk, FighterHero def)
+    {
+
+        if (def.IsMain)
+        {
+            // 主角死亡，显示死亡界面
+
+        }
+    }
+
+    // 玩家升级
+    public void OnHeroLevelup(FighterHero hero)
     {
 
     }
@@ -215,7 +224,7 @@ public class CombatMgr : MonoBehaviour
         {
             Transform tf = Camera.main.transform;
             Vector3 pos = tf.position;
-            float speed = m_CameraSpeed;
+            float speed = Config.CAMERA_SPEED;
             if (Mathf.Approximately(vec.x, 0f))
             {
                 if (Mathf.Approximately(vec.y, 0f)) return;
@@ -255,7 +264,7 @@ public class CombatMgr : MonoBehaviour
         if (m_MainHero.Weapon)
         {
             id = m_MainHero.Weapon.ID + 1;
-            if (id > ResMgr.It.GetWeaponCount())
+            if (id > Config.WeaponCfg.Length)
             {
                 id = 1;
             }
@@ -268,7 +277,7 @@ public class CombatMgr : MonoBehaviour
     #region 镜头控制
     protected void CameraReset()
     {
-        Camera.main.transform.position = new Vector3(0, m_CameraHeight, 0);
+        Camera.main.transform.position = new Vector3(0, Config.CAMERA_HEIGHT, 0);
         //Camera.main.transform.rotation = Quaternion.identity;
         //Camera.main.transform.Rotate(Vector3.right, 80);
     }
@@ -278,7 +287,7 @@ public class CombatMgr : MonoBehaviour
         if (m_MainHero == null) return;
         Vector3 dst = m_MainHero.transform.position;
         Vector3 src = Camera.main.transform.position;
-        dst.y = m_CameraHeight;
+        dst.y = Config.CAMERA_HEIGHT;
         dst.z -= 2;
         Camera.main.transform.position = dst;
     }

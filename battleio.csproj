@@ -119,8 +119,10 @@
     <Compile Include="Assets\Scripts\Combat\FighterItem.cs" />
     <Compile Include="Assets\Scripts\Combat\xin.cs" />
     <Compile Include="Assets\Scripts\CombatMgr.cs" />
+    <Compile Include="Assets\Scripts\Config.cs" />
     <Compile Include="Assets\Scripts\Global.cs" />
     <Compile Include="Assets\Scripts\Item\ExpItem.cs" />
+    <Compile Include="Assets\Scripts\Item\HeartItem.cs" />
     <Compile Include="Assets\Scripts\Item\ItemBase.cs" />
     <Compile Include="Assets\Scripts\Map\map1.cs" />
     <Compile Include="Assets\Scripts\Map\MapBase.cs" />

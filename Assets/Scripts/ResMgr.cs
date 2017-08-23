@@ -24,45 +24,6 @@ public struct STResConfig
     public bool bStayMem;   //是否常驻内存
 }
 
-public class MapConfig
-{
-    public int id;
-    public string name;
-    public int width;
-    public int height;
-    public GameObject prefab;
-}
-
-public class HeroConfig
-{
-    public int id;
-    public string name;
-    public GameObject prefab;
-}
-
-public class WeaponConfig
-{
-    public int id;
-    public string name;
-    public GameObject prefab;
-    public int shell;
-    public float atktime;       //攻击前摇
-}
-
-public class ShellConfig
-{
-    public int id;
-    public GameObject prefab;
-    public GameObject hole;
-    public float speed;         // 基础飞行速度
-    public float distance;      // 基础飞行距离
-}
-
-public class ItemConfig
-{
-    public int id;
-    public GameObject prefab;
-}
 
 
 public class ResMgr : MonoBehaviour
@@ -80,66 +41,41 @@ public class ResMgr : MonoBehaviour
 
     #region 资源文件
     private Dictionary<string, Object> m_Objects;
-    private List<string> m_LoadList;
     private EnLoadState m_LoadState;
 
     public EnLoadState LoadState { get { return m_LoadState; } }
     public delegate void LoadCallback(string name, Object obj);
+
+    // 资源池
+    private Dictionary<string, Stack<GameObject>> m_Pool;
     #endregion
-
-    #region 配置文件
-    private Dictionary<string, object> m_Const;
-    private MapConfig[] m_Map;
-    private HeroConfig[] m_Hero;
-    private WeaponConfig[] m_Weapon;
-    private ShellConfig[] m_Shell;
-    private ItemConfig[] m_Item;
-    #endregion
-
-
-    public void OnInit()
-    {
-        OnInitRes();
-        OnInitConfig();
-    }
-
-    public void OnUninit()
-    {
-        OnUninitConfig();
-        OnUninitRes();
-    }
 
 
 
     #region 资源文件的加载管理
-    void OnInitRes()
+    public void OnInit()
     {
         m_Objects = new Dictionary<string, Object>();
-        m_LoadList = new List<string>();
         m_LoadState = EnLoadState.None;
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            Transform tf = transform.GetChild(i);
-            tf.gameObject.SetActive(false);
-            m_Objects.Add(tf.name, tf.gameObject);
-        }
+        m_Pool = new Dictionary<string, Stack<GameObject>>();
     }
 
-    void OnUninitRes()
+    public void OnUninit()
     {
-        if (m_LoadList.Count > 0)
+        foreach (var stack in m_Pool.Values)
         {
-            string name;
-            for (int i = 0; i < m_LoadList.Count; i++)
+            foreach (var obj in stack)
             {
-                name = m_LoadList[i];
-                if (m_Objects.ContainsKey(name))
-                {
-                    Resources.UnloadAsset(m_Objects[name]);
-                }
+                DestroyObject(obj);
             }
+            stack.Clear();
         }
-        m_LoadList.Clear();
+        m_Pool.Clear();
+
+        foreach (var obj in m_Objects.Values)
+        {
+            Resources.UnloadAsset(obj);
+        }
         m_Objects.Clear();
     }
 
@@ -187,7 +123,6 @@ public class ResMgr : MonoBehaviour
         if (save && asset != null)
         {
             m_Objects[name] = asset;
-            m_LoadList.Add(name);
         }
         return asset;
     }
@@ -208,7 +143,6 @@ public class ResMgr : MonoBehaviour
         if (save && req.asset != null)
         {
             m_Objects[name] = req.asset;
-            m_LoadList.Add(name);
         }
         if (cbFunc != null)
         {
@@ -219,161 +153,51 @@ public class ResMgr : MonoBehaviour
 
     public void UnLoadResource(string name)
     {
-        if (!m_Objects.ContainsKey(name) || !m_LoadList.Contains(name)) return;
+        if (!m_Objects.ContainsKey(name)) return;
         Resources.UnloadAsset(m_Objects[name]);
         m_Objects.Remove(name);
     }
     #endregion
 
-
-
-    #region 配置文件的加载管理
-    void OnInitConfig()
+    #region 资源池
+    public GameObject CreatePrefab(string name)
     {
-        Object asset = Resources.Load("Config");
-        if (asset == null) return;
-        TextAsset textAsset = (TextAsset)asset;
-        JsonData jsonD = JsonMapper.ToObject(textAsset.text);
-        if (!jsonD.IsObject) return;
-
-        // 常量
-        JsonData data = jsonD["const"];
-        m_Const = new Dictionary<string, object>();
-        JsonData item;
-        for (int i = 0; i < data.Count; i++)
+        if (m_Pool.ContainsKey(name))
         {
-            item = data[i];
-            JsonData tmp = item["value"];
-            object value = null;
-            if (tmp.IsBoolean) value = (bool)tmp;
-            else if (tmp.IsDouble) value = (float)(double)tmp;
-            else if (tmp.IsInt) value = (int)tmp;
-            else if (tmp.IsLong) value = (long)tmp;
-            if (value != null) m_Const.Add((string)item["name"], value);
-        }
-
-        // 地图
-        data = jsonD["map"];
-        m_Map = new MapConfig[data.Count];
-        for (int i = 0; i < data.Count; i++)
-        {
-            item = data[i];
-            MapConfig map = new MapConfig
+            var stack = m_Pool[name];
+            if (stack.Count > 0)
             {
-                id = (int)item["id"],
-                name = (string)item["name"],
-                width = (int)item["width"],
-                height = (int)item["height"],
-                prefab = ResMgr.It.GetResource((string)item["prefab"], true) as GameObject
-            };
-            m_Map[map.id - 1] = map;
+                return stack.Pop();
+            }
         }
+        GameObject obj = GetResource(name, true) as GameObject;
+        return Instantiate(obj);
+    }
 
-        // 角色
-        data = jsonD["hero"];
-        m_Hero = new HeroConfig[data.Count];
-        for (int i = 0; i < data.Count; i++)
+    public void ReleasePrefab(string name, GameObject obj)
+    {
+        obj.SetActive(false);
+        if (m_Pool.ContainsKey(name))
         {
-            item = data[i];
-            HeroConfig hero = new HeroConfig
-            {
-                id = (int)item["id"],
-                name = (string)item["name"],
-                prefab = ResMgr.It.GetResource((string)item["prefab"], true) as GameObject
-            };
-            m_Hero[hero.id - 1] = hero;
+            var stack = m_Pool[name];
+            stack.Push(obj);
         }
-
-        // 武器
-        data = jsonD["weapon"];
-        m_Weapon = new WeaponConfig[data.Count];
-        for (int i = 0; i < data.Count; i++)
+        else
         {
-            item = data[i];
-            WeaponConfig weapon = new WeaponConfig
-            {
-                id = (int)item["id"],
-                name = (string)item["name"],
-                shell = (int)item["shell"],
-                atktime = (float)(double)item["atktime"],
-                prefab = ResMgr.It.GetResource((string)item["prefab"], true) as GameObject
-            };
-            m_Weapon[weapon.id - 1] = weapon;
-        }
-
-        // 子弹
-        data = jsonD["shell"];
-        m_Shell = new ShellConfig[data.Count];
-        for (int i = 0; i < data.Count; i++)
-        {
-            item = data[i];
-            ShellConfig shell = new ShellConfig
-            {
-                id = (int)item["id"],
-                speed = (float)(double)item["speed"],
-                distance = (float)(double)item["distance"],
-                prefab = ResMgr.It.GetResource((string)item["prefab"], true) as GameObject,
-                hole = ResMgr.It.GetResource((string)item["hole"], true) as GameObject
-            };
-            m_Shell[shell.id - 1] = shell;
-        }
-
-        // 道具
-        data = jsonD["item"];
-        m_Item = new ItemConfig[data.Count];
-        for (int i = 0; i < data.Count; i++)
-        {
-            item = data[i];
-            ItemConfig obj = new ItemConfig
-            {
-                id = (int)item["id"],
-                prefab = ResMgr.It.GetResource((string)item["prefab"], true) as GameObject,
-            };
-            m_Item[obj.id - 1] = obj;
+            Stack<GameObject> stack = new Stack<GameObject>();
+            stack.Push(obj);
+            m_Pool.Add(name, stack);
         }
     }
 
-    void OnUninitConfig()
-    {
-        m_Const = null;
-    }
-
-    public object GetConst(string key)
-    {
-        if (!m_Const.ContainsKey(key)) return null;
-        return m_Const[key];
-    }
-
-    public MapConfig GetMapConfig(int id)
-    {
-        return m_Map[id - 1];
-    }
-
-    public HeroConfig GetHeroConfig(int id)
-    {
-        return m_Hero[id - 1];
-    }
-
-    public WeaponConfig GetWeaponConfig(int id)
-    {
-        return m_Weapon[id - 1];
-    }
-
-    public int GetWeaponCount()
-    {
-        return m_Weapon.Length;
-    }
-
-    public ShellConfig GetShellConfig(int id)
-    {
-        return m_Shell[id - 1];
-    }
+    #endregion
 
 
+    #region 配置加载
     public GameObject LoadScene(int id, Transform parent)
     {
-        MapConfig cfg = m_Map[id - 1];
-        GameObject obj = Instantiate(cfg.prefab);
+        MapConfig cfg = Config.MapCfg[id - 1];
+        GameObject obj = CreatePrefab(cfg.prefab);
         obj.transform.rotation = Quaternion.identity;
         obj.transform.localPosition = Vector3.zero;
         obj.transform.localScale = new Vector3(1, 1.5f, 1);
@@ -382,15 +206,16 @@ public class ResMgr : MonoBehaviour
         return obj;
     }
 
-    public void ReleaseScene(GameObject scene)
+    public void ReleaseScene(int id, GameObject scene)
     {
-        DestroyObject(scene);
+        MapConfig cfg = Config.MapCfg[id - 1];
+        ReleasePrefab(cfg.prefab, scene);
     }
 
     public FighterHero CreateHero(int id, float x, float z, int fid, string name, int hp, int maxhp)
     {
-        HeroConfig cfg = m_Hero[id - 1];
-        GameObject obj = Instantiate(cfg.prefab);
+        HeroConfig cfg = Config.HeroCfg[id - 1];
+        GameObject obj = CreatePrefab(cfg.prefab);
         FighterHero hero = obj.GetComponent<FighterHero>();
         hero.transform.parent = CombatMgr.It.ObjRoot;
         hero.transform.rotation = Quaternion.identity;
@@ -401,23 +226,21 @@ public class ResMgr : MonoBehaviour
         hero.ID = id;
         hero.Name = name;
         hero.name = "hero_" + fid;
-        hero.CurHP = hp;
-        hero.MaxHP = maxhp;
-        hero.OnInit();
+        hero.OnInit(hp, maxhp);
         return hero;
     }
 
     public void ReleaseHero(FighterHero hero)
     {
+        HeroConfig cfg = Config.HeroCfg[hero.ID - 1];
         hero.OnUninit();
-        hero.gameObject.SetActive(false);
-        DestroyObject(hero.gameObject);
+        ReleasePrefab(cfg.prefab, hero.gameObject);
     }
 
     public WeaponBase CreateWeapon(int id)
     {
-        WeaponConfig cfg = m_Weapon[id - 1];
-        GameObject obj = Instantiate(cfg.prefab);
+        WeaponConfig cfg = Config.WeaponCfg[id - 1];
+        GameObject obj = CreatePrefab(cfg.prefab);
         WeaponBase weapon = obj.GetComponent<WeaponBase>();
         weapon.gameObject.SetActive(true);
         weapon.ID = id;
@@ -428,18 +251,17 @@ public class ResMgr : MonoBehaviour
 
     public void ReleaseWeapon(WeaponBase obj)
     {
+        WeaponConfig cfg = Config.WeaponCfg[obj.ID - 1];
         obj.OnDetach();
-        obj.gameObject.SetActive(false);
-
         obj.OnUninit();
-        DestroyObject(obj.gameObject);
+        ReleasePrefab(cfg.prefab, obj.gameObject);
     }
 
     public ShellBase CreateShell(int weaponid, Transform parent)
     {
-        WeaponConfig weapon = m_Weapon[weaponid - 1];
-        ShellConfig cfg = m_Shell[weapon.shell - 1];
-        GameObject obj = Instantiate(cfg.prefab);
+        WeaponConfig weapon = Config.WeaponCfg[weaponid - 1];
+        ShellConfig cfg = Config.ShellCfg[weapon.shell - 1];
+        GameObject obj = CreatePrefab(cfg.prefab);
         ShellBase shell = obj.GetComponent<ShellBase>();
         shell.gameObject.SetActive(true);
         shell.transform.parent = parent;
@@ -454,22 +276,31 @@ public class ResMgr : MonoBehaviour
 
     public void ReleaseShell(ShellBase shell)
     {
+        ShellConfig cfg = Config.ShellCfg[shell.ID - 1];
+        if (shell.Hole != null) ReleasePrefab(cfg.hole, shell.Hole);
         shell.OnDetach();
-        shell.gameObject.SetActive(false);
         shell.OnUninit();
-        DestroyObject(shell.gameObject);
+        ReleasePrefab(cfg.prefab, shell.gameObject);
     }
+
+    public GameObject CreateShellHole(int id)
+    {
+        ShellConfig cfg = Config.ShellCfg[id - 1];
+        GameObject obj = CreatePrefab(cfg.prefab);
+        return obj;
+    }
+
+
 
     public ItemBase CreateItem(int id, float x, float z, Transform parent = null)
     {
-        ItemConfig cfg = m_Item[id - 1];
-        GameObject obj = Instantiate(cfg.prefab);
+        ItemConfig cfg = Config.ItemCfg[id - 1];
+        GameObject obj = CreatePrefab(cfg.prefab);
         ItemBase item = obj.GetComponent<ItemBase>();
         item.gameObject.SetActive(true);
         if (parent == null) parent = CombatMgr.It.ObjRoot;
         item.transform.parent = parent;
-        item.transform.localPosition = new Vector3(x, 1.5f, z);
-        item.transform.localRotation = Quaternion.identity;
+        item.transform.localPosition = new Vector3(x, cfg.y, z);
         item.ID = cfg.id;
         item.name = "item_" + cfg.id;
         item.OnInit();
@@ -478,9 +309,9 @@ public class ResMgr : MonoBehaviour
 
     public void ReleaseItem(ItemBase item)
     {
-        item.gameObject.SetActive(false);
+        ItemConfig cfg = Config.ItemCfg[item.ID - 1];
         item.OnUninit();
-        DestroyObject(item.gameObject);
+        ReleasePrefab(cfg.prefab, item.gameObject);
     }
 
     #endregion

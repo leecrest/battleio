@@ -19,22 +19,33 @@ public class FighterHero : FighterBase
     public Vector2 BloodSize = new Vector2(150, 20);
     public Vector2 NameSize = new Vector2(200, 50);
     [HideInInspector]
-    public WeaponBase Weapon;
-    [HideInInspector]
-    public int CurHP = 50;
-    [HideInInspector]
-    public int MaxHP = 100;
+    public WeaponBase Weapon = null;
     [HideInInspector]
     public float MoveSpeed = 10f;
 
+    // 养成属性
+    public int Atk { get { return m_Atk; } }
+    public int Def { get { return m_Def; } }
+    public int CurHP { get { return m_HP; } }
+    public int MaxHP { get { return m_MaxHP; } }
+    public int ShellCount { get { return m_ShellCount; } }
+    public float ShellSpeed { get { return m_ShellSpeed; } }
+    public float ShellRange { get { return m_ShellRange; } }
+    public int Damage { get { return Mathf.FloorToInt(m_Atk * (1 + m_DamageRatio)); } }
 
-    // 武器加成
-    [HideInInspector]
-    public int ShellCount = 0;
-    [HideInInspector]
-    public float ShellSpeed = 0f;
-    [HideInInspector]
-    public float ShellDistance = 0f;
+    private System.DateTime m_Birth;        // 出生时间点，用于计算存活时长
+    private int m_Atk;                      // 攻击
+    private int m_Def;                      // 防御
+    private int m_HP;                       // 当前生命值
+    private int m_MaxHP;                    // 最大生命值
+    private int m_Exp = 0;                  // 经验值
+    private int m_Level = 1;                // 等级
+    private int m_ShellCount = 0;           // 武器加成：子弹数量加成
+    private float m_ShellSpeed = 0f;        // 武器加成：子弹速度加成
+    private float m_ShellRange = 0f;        // 武器加成：子弹射程加成
+    private float m_CureRatio = 0;            // 治疗加成系数
+    private float m_DamageRatio = 0;          // 伤害加成系数
+
 
     void OnGUI()
     {
@@ -59,10 +70,19 @@ public class FighterHero : FighterBase
             Name, ResMgr.It.MySkin.label);
     }
 
-    public override void OnInit()
+    public void OnInit(int hp, int maxhp)
     {
         base.OnInit();
         Weapon = null;
+        m_HP = hp;
+        m_MaxHP = maxhp;
+        m_Exp = 0;
+        m_Level = 1;
+        m_ShellCount = 0;
+        m_ShellRange = 0;
+        m_ShellSpeed = 0;
+        m_CureRatio = 0;
+        m_DamageRatio = 0;
     }
 
     public override void OnUninit()
@@ -160,7 +180,7 @@ public class FighterHero : FighterBase
     {
         if (id < 0)
         {
-            id = Random.Range(1, ResMgr.It.GetWeaponCount());
+            id = Random.Range(1, Config.WeaponCfg.Length);
         }
         if (Weapon)
         {
@@ -185,6 +205,37 @@ public class FighterHero : FighterBase
     #endregion
 
     #region 数值加成
+
+    // 加血
+    public void OnCure(int hp)
+    {
+        if (hp <= 0 || m_HP <= 0) return;
+        m_HP += Mathf.FloorToInt(hp * (m_CureRatio + 1));
+        if (m_HP > m_MaxHP) m_HP = m_MaxHP;
+    }
+
+    // 扣血
+    public void OnDamage(int hp)
+    {
+        if (hp > 0) return;
+        m_HP -= hp;
+        if (m_HP < 0) m_HP = 0;
+    }
+
+    // 加经验
+    public void AddExp(int exp)
+    {
+        if (exp <= 0 || m_Level >= Config.LevelMax) return;
+        int max = Config.LevelExp[m_Level];
+        m_Exp += exp;
+        if (m_Exp >= max)
+        {
+            m_Level++;
+            m_Exp = 0;
+            CombatMgr.It.OnHeroLevelup(this);
+        }
+    }
+
 
     #endregion
 }

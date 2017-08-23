@@ -20,7 +20,7 @@ public class map1 : MapBase
 
         for (int i = 0; i < 30; i++)
         {
-            ResMgr.It.CreateItem(1, Random.Range(-20f, 20f), Random.Range(-20f, 20f));
+            ResMgr.It.CreateItem(2, Random.Range(-20f, 20f), Random.Range(-20f, 20f));
         }
     }
 }
