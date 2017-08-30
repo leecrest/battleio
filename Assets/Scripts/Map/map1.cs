@@ -8,12 +8,12 @@ public class map1 : MapBase
     {
         base.OnStart();
         // 创建主角，并将镜头绑定到主角头上
-        FighterHero obj = CombatMgr.It.AddHero(true, 1, 0, 0, 0, "哈哈", 10, 100);
+        FighterHero obj = GameMgr.It.AddHero(true, 1, 0, 0, 0, "哈哈", 5, 5);
         obj.ChangeWeapon(1);
         for (int i = 0; i < 20; i++)
         {
-            obj = CombatMgr.It.AddHero(false, 1, Random.Range(-20f,20f), Random.Range(-20f,20f),
-                0, "吼吼", 50, 100);
+            obj = GameMgr.It.AddHero(false, 1, Random.Range(-20f,20f), Random.Range(-20f,20f),
+                0, "吼吼", 5, 5);
             obj.InitAI(true);
             obj.ChangeWeapon(-1);
         }

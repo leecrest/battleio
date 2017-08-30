@@ -13,7 +13,7 @@ public class HeartItem : ItemBase
 
     public override bool OnAttachHero(FighterHero hero)
     {
-        CombatMgr.It.Cure(hero, 10);
+        GameMgr.It.Cure(hero, 10);
         return true;
     }
 

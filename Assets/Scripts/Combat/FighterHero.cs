@@ -21,7 +21,7 @@ public class FighterHero : FighterBase
     [HideInInspector]
     public WeaponBase Weapon = null;
     [HideInInspector]
-    public float MoveSpeed = 10f;
+    public float MoveSpeed;
 
     // 养成属性
     public int Damage { get { return Mathf.FloorToInt(Atk * (1 + DamageRatio)); } }
@@ -76,6 +76,9 @@ public class FighterHero : FighterBase
         ShellSpeed = 0;
         CureRatio = 0;
         DamageRatio = 0;
+        Atk = 1;
+        Def = 0;
+        MoveSpeed = 0.05f;
     }
 
     public override void OnUninit()
@@ -210,7 +213,7 @@ public class FighterHero : FighterBase
     // 扣血
     public void OnDamage(int hp)
     {
-        if (hp > 0) return;
+        if (hp <= 0 || CurHP <= 0) return;
         CurHP -= hp;
         if (CurHP < 0) CurHP = 0;
     }
@@ -225,7 +228,7 @@ public class FighterHero : FighterBase
         {
             Level++;
             Exp = 0;
-            CombatMgr.It.OnHeroLevelup(this);
+            GameMgr.It.OnHeroLevelup(this);
         }
     }
 

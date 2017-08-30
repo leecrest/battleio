@@ -80,7 +80,7 @@ public class ShellBase : MonoBehaviour {
     {
         State = EnShellState.Flying;
         // 子弹脱离武器
-        transform.parent = CombatMgr.It.ObjRoot;
+        transform.parent = GameMgr.It.ObjRoot;
         m_Dir = transform.position - Owner.Owner.transform.position;
         m_Dir = m_Dir.normalized;
         ShellConfig cfg = Config.ShellCfg[ID-1];
@@ -147,7 +147,7 @@ public class ShellBase : MonoBehaviour {
     void Drop2Hero()
     {
         transform.parent = m_Target.transform;
-        CombatMgr.It.Damage(Owner.Owner, m_Target.GetComponent<FighterHero>(), m_Damage);
+        GameMgr.It.Damage(Owner.Owner, m_Target.GetComponent<FighterHero>(), m_Damage);
     }
 
     // 子类继承，修改地面弹孔的数据
@@ -165,7 +165,7 @@ public class ShellBase : MonoBehaviour {
     {
         if (!m_Check || State != EnShellState.Flying) return;
         if (collider.gameObject == Owner || collider.gameObject == Owner.Owner.gameObject) return;
-        if (collider.tag == "shell") return;
+        if (collider.tag == "shell" || collider.tag == "item") return;
         FlyEnd(collider.gameObject);
     }
 
@@ -173,7 +173,7 @@ public class ShellBase : MonoBehaviour {
     {
         if (!m_Check || State != EnShellState.Flying) return;
         if (collider.gameObject == Owner || collider.gameObject == Owner.Owner.gameObject) return;
-        if (collider.tag == "shell") return;
+        if (collider.tag == "shell" || collider.tag == "item") return;
         FlyEnd(collider.gameObject);
     }
 
